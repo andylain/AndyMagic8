@@ -72,12 +72,28 @@ App 每次開啟都回到八號球，不會記住上次用的模式。
 右上角 📋 可以打開目前模式的完整清單；用 `roll()` 算出來的模式（預算、數字、撲克牌）
 沒有固定清單，改顯示 `summary` 的範圍說明。
 
+## 社群分享
+
+`index.html` 的 `<head>` 有 Open Graph、Twitter Card 與 JSON-LD 結構化資料，
+預覽圖是 `og.png`（1200×630，Facebook 建議尺寸）。
+
+**換網域時**要一起改：`canonical`、`og:url`、`og:image`、`twitter:image` 四個絕對網址，
+以及 JSON-LD 裡的 `url`。`check.js` 會驗證 `og:url` 與 `canonical` 一致、
+`og:image` 是絕對網址、宣告的尺寸與實際檔案相符。
+
+**部署後記得去 [Facebook 分享偵錯工具](https://developers.facebook.com/tools/debug/)**
+貼上網址按「Scrape Again」，否則 Facebook 會一直顯示舊的快取。
+
+分享描述刻意不寫模式數量，這樣新增模式時不用改文案。圖片上的數量則是
+`make-og.js` 從 `modes.js` 讀出來的，重跑就會更新。
+
 ## 開發
 
 ```
 node check.js      驗證資料與版本一致性（CI 每次 push 都會跑）
 node bump.js       資源版本號 +1，三個地方一起改
 node bump.js 12    指定版本號
+node make-og.js    重新產生社群分享預覽圖（需要 npm i playwright-core）
 ```
 
 `check.js` 會擋下：清單重複、未定義的 tone、同模式內兩個分類撞色、
@@ -94,6 +110,8 @@ app.js        應用邏輯
 sw.js         Service Worker，離線快取
 check.js      資料驗證（零相依）
 bump.js       版本號同步工具
+make-og.js    產生 og.png 的工具
+og.png        社群分享預覽圖 1200x630
 manifest.json PWA 設定
 *.png         各平台圖示
 ```

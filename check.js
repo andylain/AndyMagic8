@@ -171,6 +171,59 @@ for (const ref of [...html.matchAll(/(?:href|src)="(?!https?:|data:)([^"]+)"/g)]
   if (!sw.includes(`"./${file}`)) fail(`sw.js 沒有預快取 ${file}，離線時會載不到`);
 }
 
+// ---- 社群分享的 metadata ----
+const metaOf = (attr, key) => {
+  const m = html.match(new RegExp(`<meta ${attr}="${key}" content="([^"]*)"`));
+  return m ? m[1] : null;
+};
+for (const key of ["og:type", "og:title", "og:description", "og:image", "og:url",
+                   "og:image:width", "og:image:height", "og:image:alt"]) {
+  if (!metaOf("property", key)) fail(`index.html 缺少 ${key}`);
+}
+for (const key of ["description", "author", "twitter:card", "twitter:image"]) {
+  if (!metaOf("name", key)) fail(`index.html 缺少 meta ${key}`);
+}
+
+const ogImage = metaOf("property", "og:image");
+if (ogImage && !/^https?:\/\//.test(ogImage)) {
+  fail("og:image 必須是絕對網址，Facebook 不接受相對路徑");
+}
+const ogUrl = metaOf("property", "og:url");
+const canonical = (html.match(/<link rel="canonical" href="([^"]+)"/) || [])[1];
+if (ogUrl && canonical && ogUrl !== canonical) fail(`og:url 與 canonical 不一致: ${ogUrl} vs ${canonical}`);
+if (ogImage && ogUrl && !ogImage.startsWith(ogUrl)) {
+  warn(`og:image 不在 og:url 底下，換網域時容易漏改: ${ogImage}`);
+}
+
+// 宣告的尺寸要跟實際檔案相符，否則 Facebook 會裁錯或不顯示
+const ogFile = path.join(ROOT, "og.png");
+if (!fs.existsSync(ogFile)) fail("找不到 og.png");
+else {
+  const buf = fs.readFileSync(ogFile);
+  const w = buf.readUInt32BE(16), h = buf.readUInt32BE(20);
+  const dw = Number(metaOf("property", "og:image:width"));
+  const dh = Number(metaOf("property", "og:image:height"));
+  if (w !== dw || h !== dh) fail(`og.png 實際是 ${w}x${h}，但宣告為 ${dw}x${dh}`);
+  if (w < 600 || h < 315) fail(`og.png ${w}x${h} 小於 Facebook 的最低要求 600x315`);
+  if (buf.length > 8 * 1024 * 1024) fail("og.png 超過 Facebook 的 8MB 上限");
+  // 模式清單改了但圖沒重產 —— 圖上的模式數量會過期
+  if (fs.statSync(path.join(ROOT, "modes.js")).mtimeMs > fs.statSync(ogFile).mtimeMs) {
+    warn("modes.js 比 og.png 新，模式數量可能已過期 —— 跑 node make-og.js 重新產圖");
+  }
+}
+
+const ld = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+if (!ld) fail("缺少 JSON-LD 結構化資料");
+else {
+  try {
+    const data = JSON.parse(ld[1]);
+    if (data["@type"] !== "WebApplication") warn(`JSON-LD 的 @type 是 ${data["@type"]}`);
+    if (!data.author || !data.author.name) fail("JSON-LD 缺少作者");
+  } catch (e) {
+    fail(`JSON-LD 不是合法的 JSON: ${e.message}`);
+  }
+}
+
 // ---- 報告 ----
 const total = MODES.reduce((n, m) => n + (m.items ? m.items.length : 0), 0);
 console.log(`模式 ${MODES.length} 個、清單項目 ${total} 筆、tone ${Object.keys(TONES).length} 種`);
