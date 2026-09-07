@@ -103,7 +103,7 @@ function playShake() {
 
 const soundBtn = document.getElementById("soundToggle");
 function renderSoundBtn() {
-  soundBtn.textContent = soundOn ? "\u{1F50A}" : "\u{1F507}";
+  // 圖示是 SVG，開關狀態由 CSS 依 aria-pressed 切換，這裡不動 textContent
   soundBtn.setAttribute("aria-pressed", String(soundOn));
   soundBtn.setAttribute("aria-label", soundOn ? "關閉音效" : "開啟音效");
 }
@@ -114,6 +114,7 @@ soundBtn.addEventListener("click", () => {
   try { localStorage.setItem(SOUND_KEY, soundOn ? "on" : "off"); } catch (e) {}
   renderSoundBtn();
   if (soundOn) getCtx();   // 趁這個手勢把 AudioContext 解鎖
+  toast(soundOn ? "已開啟音效" : "已關閉音效");
 });
 
 /* ---------- 模式 ---------- */

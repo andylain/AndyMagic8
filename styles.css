@@ -368,6 +368,22 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
   -webkit-tap-highlight-color: transparent;
 }
 .tool-btn[hidden] { display: none; }
+/* 音效與搖一搖用純黑白的線條圖示（跟著文字色，不吃系統的彩色 emoji） */
+.tool-btn .icon {
+  display: block;
+  margin: 0 auto;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tool-btn .icon .solid { fill: currentColor; }
+/* 開＝畫聲波／震動線，關＝畫叉叉／斜線 */
+.tool-btn[aria-pressed="true"] .off,
+.tool-btn[aria-pressed="false"] .on { display: none; }
 .tool-btn:hover,
 .tool-btn[aria-expanded="true"],
 .tool-btn[aria-pressed="true"] { opacity: 1; background: rgba(255,255,255,.12); }
