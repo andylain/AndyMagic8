@@ -128,16 +128,16 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
   z-index: 1;
   width: 84%;
   text-align: center;
-  font-size: clamp(.66rem, 2.9vw, .9rem);
+  font-size: clamp(.72rem, 3.6vw, 1rem);
   line-height: 1.28;
   text-shadow: 0 1px 3px rgba(0,0,0,.55);
   transition: opacity .25s;
 }
 .answer .swatch {
   display: block;
-  width: 34px;
-  height: 34px;
-  margin: 0 auto 9px;
+  width: 28px;
+  height: 28px;
+  margin: 0 auto 7px;
   border-radius: 50%;
   box-shadow: 0 0 0 2px rgba(255,255,255,.28), 0 3px 10px rgba(0,0,0,.5);
 }
