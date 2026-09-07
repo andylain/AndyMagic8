@@ -4,10 +4,13 @@
  * 不過就算忘了換也不會讓使用者卡在舊版：HTML 走 network-first，
  * 有網路時一律拿最新的，快取只是離線時的後備。
  */
-const VERSION = "magic8-v1";
+const VERSION = "magic8-v2";
 const ASSETS = [
   "./",
   "./index.html",
+  "./styles.css",
+  "./modes.js",
+  "./app.js",
   "./manifest.json",
   "./apple-touch-icon.png",
   "./icon-192.png",
@@ -42,10 +45,14 @@ self.addEventListener("fetch", e => {
   if (req.method !== "GET") return;
   if (new URL(req.url).origin !== self.location.origin) return;   // 外部連結不碰
 
-  const wantsHTML = req.mode === "navigate" ||
-                    (req.headers.get("accept") || "").includes("text/html");
+  // HTML、CSS、JS 都是會改版的程式碼，必須一起走 network-first：
+  // 只要其中一支吃到舊快取、配上新的另一支，畫面就可能壞掉
+  const path = new URL(req.url).pathname;
+  const isCode = req.mode === "navigate" ||
+                 (req.headers.get("accept") || "").includes("text/html") ||
+                 path.endsWith(".js") || path.endsWith(".css");
 
-  if (wantsHTML) {
+  if (isCode) {
     // network-first：內容永遠是最新的，離線才退回快取
     e.respondWith(
       fetch(req)
