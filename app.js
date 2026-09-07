@@ -116,13 +116,33 @@ function showItem(item) {
   answer.querySelector(".secondary").textContent = item.secondary;
 }
 
+// 權重表：切換模式時算一次。整份清單都沒寫 weight 就退回均等隨機
+let cum = [], cumTotal = 0;
+function buildWeights() {
+  cum = [];
+  cumTotal = 0;
+  if (!mode.items) return;
+  mode.items.forEach(i => { cumTotal += i.weight || 1; cum.push(cumTotal); });
+}
+
+function pickOne() {
+  const items = mode.items;
+  if (cumTotal === items.length) return items[Math.floor(Math.random() * items.length)];
+  const r = Math.random() * cumTotal;
+  let lo = 0, hi = cum.length - 1;      // 二分找第一個累積值大於 r 的位置
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if (cum[mid] <= r) lo = mid + 1; else hi = mid;
+  }
+  return items[lo];
+}
+
 function pick() {
   if (mode.roll) return mode.roll();     // 用算的模式沒有清單
-  const items = mode.items;
-  let item = items[Math.floor(Math.random() * items.length)];
+  let item = pickOne();
   // 只在題庫夠大時才避免連抽重複，否則會把「隨機」變成「輪流」
-  if (mode.noRepeat && items.length > 2) {
-    while (item === lastItem) item = items[Math.floor(Math.random() * items.length)];
+  if (mode.noRepeat && mode.items.length > 2) {
+    while (item === lastItem) item = pickOne();
   }
   lastItem = item;
   return item;
@@ -131,6 +151,7 @@ function pick() {
 function applyMode(next) {
   mode = next;
   lastItem = null;
+  buildWeights();
   answer.dataset.mode = mode.id;
   if (mode.size) answer.dataset.size = mode.size; else delete answer.dataset.size;
   pageTitle.textContent = mode.icon + " " + mode.label;
@@ -223,7 +244,8 @@ function renderList() {
 
   const count = document.createElement("p");
   count.className = "list-note";
-  count.textContent = "共 " + mode.items.length + " 種";
+  count.textContent = "共 " + mode.items.length + " 種"
+                    + (mode.summary ? "・" + mode.summary : "");
   listPanel.appendChild(count);
 
   // secondary 夠集中就當成分類（食物那種），否則它其實是每筆自己的說明，平舖就好
