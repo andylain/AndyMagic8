@@ -382,6 +382,7 @@ document.addEventListener("click", e => {
 function openMenu() {
   modeList.hidden = false;
   modeBtn.setAttribute("aria-expanded", "true");
+  modeBtn.classList.remove("hint");   // 已經找到了，不用再提示
 }
 function closeMenu() {
   modeList.hidden = true;
@@ -506,6 +507,12 @@ if (!reduceMotion) {
   });
   // 動畫事件沒送達時的保險（例如分頁在背景載入）
   setTimeout(endIntro, 2600);
+
+  // 球落定之後才提示選單，兩個動畫不要打架
+  setTimeout(() => modeBtn.classList.add("hint"), 1400);
+  modeBtn.addEventListener("animationend", e => {
+    if (e.animationName === "menu-glow") modeBtn.classList.remove("hint");
+  });
 }
 
 /* ---------- 離線支援 ---------- */

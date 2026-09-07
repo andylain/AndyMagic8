@@ -256,11 +256,25 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
   font-size: 1rem;
   line-height: 1;
   cursor: pointer;
-  opacity: .65;
+  opacity: .78;
   transition: opacity .2s, background .2s;
   -webkit-tap-highlight-color: transparent;
 }
 .mode-btn:hover, .mode-btn[aria-expanded="true"] { opacity: 1; background: rgba(255,255,255,.12); }
+
+/* 這顆鈕太安靜會被忽略，所以入場動畫結束後亮三次提示它的存在，
+ * 然後自己停下來 —— 一直閃的話比看不到更煩。開過選單也會立刻停。 */
+.mode-btn.hint { animation: menu-glow 1.4s ease-in-out 3; }
+@keyframes menu-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(150,165,255,0);
+    border-color: rgba(255,255,255,.14);
+  }
+  45% {
+    box-shadow: 0 0 20px 5px rgba(150,165,255,.42);
+    border-color: rgba(190,200,255,.58);
+  }
+}
 .mode-btn-caret { font-size: .7rem; opacity: .7; }
 .mode-list {
   position: absolute;
@@ -357,7 +371,8 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
   .ball.shake { animation: none; }
   .ball.intro,
   .ball.intro .tri-clip,
-  .ball.intro .answer { animation: none; }
+  .ball.intro .answer,
+  .mode-btn.hint { animation: none; }
 }
 
 /* ---------- 這個模式的總表 ---------- */
