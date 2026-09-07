@@ -49,37 +49,42 @@
     80% { transform: translate(6px, 8px) rotate(3deg); }
   }
 
-  /* 藍色三角視窗 */
+  /* 藍色三角視窗：三角形只當背景層，文字疊在上面才不會被 clip-path 切掉 */
   .window {
-    width: 52%;
+    position: relative;
+    width: 60%;
     aspect-ratio: 1;
     border-radius: 50%;
     background: #0d1b3e;
     box-shadow: inset 0 0 30px rgba(0,0,0,.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    place-items: center;
+  }
+  /* 圓形遮罩只裁三角形，文字在遮罩外層所以永遠不會被切到 */
+  .tri-clip {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
     overflow: hidden;
   }
   .triangle {
-    width: 86%;
-    aspect-ratio: 1 / .87;
+    position: absolute;
+    inset: 8% 4% 6%;
     clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
     background: #16255c;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    padding-bottom: 8%;
   }
   .answer {
-    width: 74%;
+    position: relative;   /* 疊在三角形之上 */
+    z-index: 1;
+    width: 84%;
     text-align: center;
-    font-size: clamp(.7rem, 3.1vw, .95rem);
-    line-height: 1.25;
+    font-size: clamp(.66rem, 2.9vw, .9rem);
+    line-height: 1.28;
+    text-shadow: 0 1px 3px rgba(0,0,0,.55);
     transition: opacity .25s;
   }
   .answer .en { font-weight: 700; display: block; }
-  .answer .zh { display: block; font-size: .82em; opacity: .85; margin-top: 3px; }
+  .answer .zh { display: block; font-size: .82em; opacity: .85; margin-top: 4px; }
   .answer.fade { opacity: 0; }
   .answer.yes { color: var(--yes); }
   .answer.no { color: var(--no); }
@@ -94,6 +99,10 @@
   .legend .l-yes::before { color: var(--yes); }
   .legend .l-no::before { color: var(--no); }
   .legend .l-maybe::before { color: var(--maybe); }
+
+  .footer { font-size: .75rem; opacity: .45; margin-top: 8px; letter-spacing: .03em; }
+  .footer a { color: inherit; text-decoration: none; border-bottom: 1px solid currentColor; }
+  .footer a:hover { opacity: .85; }
 </style>
 </head>
 <body>
@@ -101,11 +110,10 @@
 
   <div class="ball" id="ball" role="button" tabindex="0" aria-label="搖動神奇八號球">
     <div class="window">
-      <div class="triangle">
-        <div class="answer" id="answer">
-          <span class="en">Ask a question</span>
-          <span class="zh">問個問題吧</span>
-        </div>
+      <div class="tri-clip" aria-hidden="true"><div class="triangle"></div></div>
+      <div class="answer" id="answer" aria-live="polite">
+        <span class="en">Ask a question</span>
+        <span class="zh">問個問題吧</span>
       </div>
     </div>
   </div>
@@ -116,6 +124,10 @@
     <span class="l-no">否定 ×5</span>
     <span class="l-maybe">模稜兩可 ×5</span>
   </div>
+
+  <footer class="footer">
+    Powered by <a href="https://andylain.com" target="_blank" rel="noopener">Andylain.com</a>
+  </footer>
 
 <script>
   const ANSWERS = [
@@ -160,8 +172,7 @@
     setTimeout(() => {
       const a = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
       answer.className = "answer " + a.type;
-      answer.innerHTML =
-        '<span class="en"></span><span class="zh"></span>';
+      answer.innerHTML = '<span class="en"></span><span class="zh"></span>';
       answer.querySelector(".en").textContent = a.en;
       answer.querySelector(".zh").textContent = a.zh;
       rolling = false;
