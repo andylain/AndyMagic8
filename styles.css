@@ -363,7 +363,7 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
   font-size: 1rem;
   line-height: 1;
   cursor: pointer;
-  opacity: .55;
+  opacity: .78;                 /* 跟左上角的模式鈕同亮度，四個角落才會一致 */
   transition: opacity .2s, background .2s;
   -webkit-tap-highlight-color: transparent;
 }
@@ -382,12 +382,12 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
 }
 .tool-btn .icon .solid { fill: currentColor; }
 .tool-btn .icon .dot { fill: currentColor; stroke: none; }
-/* 開＝畫聲波／震動線，關＝畫叉叉／斜線 */
+/* 開關看圖示就好（聲波↔叉叉、震動線↔斜線），不另外用亮度區分，
+   免得同一排出現兩種白 */
 .tool-btn[aria-pressed="true"] .off,
 .tool-btn[aria-pressed="false"] .on { display: none; }
 .tool-btn:hover,
-.tool-btn[aria-expanded="true"],
-.tool-btn[aria-pressed="true"] { opacity: 1; background: rgba(255,255,255,.12); }
+.tool-btn[aria-expanded="true"] { opacity: 1; background: rgba(255,255,255,.12); }
 
 /* 桌機把視窗縮小、或把瀏覽器縮放拉到 150%／175% 時，畫面高度會不夠，
    球（只看寬度）就會把 footer 擠出畫面外。這裡收緊間距，並讓球改以高度為上限，
