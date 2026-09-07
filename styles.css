@@ -74,7 +74,7 @@ h1 { font-size: 1.4rem; font-weight: 600; margin: 0; letter-spacing: .05em; }
 }
 
 /* 內容都疊在煙霧之上 */
-h1, .ball, .hint, .footer, .sound-toggle, .mode-menu, .list-menu { position: relative; z-index: 1; }
+h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
 
 .ball {
   width: min(78vw, 320px);
@@ -245,10 +245,15 @@ h1, .ball, .hint, .footer, .sound-toggle, .mode-menu, .list-menu { position: rel
 .mode-list button[aria-current="true"] { background: rgba(255,255,255,.07); font-weight: 600; }
 .mode-list button[aria-current="true"]::after { content: "✓"; margin-left: auto; opacity: .7; }
 
-.sound-toggle {
+.corner-tools {
   position: fixed;
   top: 16px;
   right: 16px;
+  z-index: 3;
+  display: flex;
+  gap: 8px;
+}
+.tool-btn {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -262,8 +267,9 @@ h1, .ball, .hint, .footer, .sound-toggle, .mode-menu, .list-menu { position: rel
   transition: opacity .2s, background .2s;
   -webkit-tap-highlight-color: transparent;
 }
-.sound-toggle:hover { opacity: 1; background: rgba(255,255,255,.12); }
-.sound-toggle[aria-pressed="true"] { opacity: .9; }
+.tool-btn:hover,
+.tool-btn[aria-expanded="true"],
+.tool-btn[aria-pressed="true"] { opacity: 1; background: rgba(255,255,255,.12); }
 
 /* 尊重系統的「減少動態效果」設定 */
 @media (prefers-reduced-motion: reduce) {
@@ -272,28 +278,12 @@ h1, .ball, .hint, .footer, .sound-toggle, .mode-menu, .list-menu { position: rel
 }
 
 /* ---------- 這個模式的總表 ---------- */
-.list-menu { position: fixed; left: 16px; bottom: 16px; z-index: 3; }
-.list-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,.14);
-  background: rgba(255,255,255,.06);
-  color: inherit;
-  font-size: 1rem;
-  line-height: 1;
-  cursor: pointer;
-  opacity: .55;
-  transition: opacity .2s, background .2s;
-  -webkit-tap-highlight-color: transparent;
-}
-.list-btn:hover, .list-btn[aria-expanded="true"] { opacity: 1; background: rgba(255,255,255,.12); }
 .list-panel {
   position: absolute;
-  left: 0;
-  bottom: 48px;
+  right: 0;
+  top: 48px;
   width: min(84vw, 400px);
-  max-height: min(66vh, 520px);
+  max-height: min(70vh, 560px);
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 14px 16px 18px;
@@ -301,6 +291,7 @@ h1, .ball, .hint, .footer, .sound-toggle, .mode-menu, .list-menu { position: rel
   border: 1px solid rgba(255,255,255,.12);
   background: rgba(18,22,38,.97);
   box-shadow: 0 16px 40px rgba(0,0,0,.55);
+  text-align: left;
 }
 .list-panel[hidden] { display: none; }
 .list-panel h2 { margin: 0 0 2px; font-size: .98rem; font-weight: 600; }

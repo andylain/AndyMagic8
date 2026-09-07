@@ -278,7 +278,7 @@ listBtn.addEventListener("click", e => {
   listPanel.hidden ? openList() : closeList();
 });
 document.addEventListener("click", e => {
-  if (!listPanel.hidden && !e.target.closest(".list-menu")) closeList();
+  if (!listPanel.hidden && !e.target.closest(".corner-tools")) closeList();
 });
 
 function openMenu() {

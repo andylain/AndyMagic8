@@ -4,13 +4,16 @@
  * 不過就算忘了換也不會讓使用者卡在舊版：HTML 走 network-first，
  * 有網路時一律拿最新的，快取只是離線時的後備。
  */
-const VERSION = "magic8-v3";
+const VERSION = "magic8-v4";
+// 資源網址帶版本號：舊版 Service Worker 對 .css/.js 是 cache-first，
+// 換掉網址才能確保它不會一直回舊檔（index.html 一律走網路，所以拿得到新版號）
+const ASSET_V = "4";
 const ASSETS = [
   "./",
   "./index.html",
-  "./styles.css",
-  "./modes.js",
-  "./app.js",
+  "./styles.css?v=" + ASSET_V,
+  "./modes.js?v=" + ASSET_V,
+  "./app.js?v=" + ASSET_V,
   "./manifest.json",
   "./apple-touch-icon.png",
   "./icon-192.png",
