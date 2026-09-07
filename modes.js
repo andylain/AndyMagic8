@@ -381,7 +381,7 @@ const MODES = [
     ]
   },
   {
-    id: "restaurant", group: "吃喝", icon: "🏪", label: "吃什麼餐廳", size: "md",
+    id: "restaurant", group: "吃喝", icon: "🏪", label: "餐廳吃什麼", size: "md",
     hint: "不知道去哪間？點一下球",
     initial: { primary: "哪一間？", secondary: "點一下球" },
     noRepeat: true,
@@ -950,7 +950,7 @@ const MODES = [
     ]
   },
   {
-    id: "cuisine", group: "吃喝", icon: "🌍", label: "吃哪一國料理", size: "md",
+    id: "cuisine", group: "吃喝", icon: "🌍", label: "異國料理吃什麼", size: "md",
     hint: "想換換口味？點一下球",
     initial: { primary: "哪一國？", secondary: "點一下球" },
     noRepeat: true,
@@ -1008,7 +1008,7 @@ const MODES = [
     ]
   },
   {
-    id: "drink", group: "吃喝", icon: "🧋", label: "喝什麼飲料", size: "md",
+    id: "drink", group: "吃喝", icon: "🧋", label: "飲料喝什麼", size: "md",
     hint: "口渴了？點一下球",
     initial: { primary: "喝什麼？", secondary: "點一下球" },
     noRepeat: true,
@@ -1116,7 +1116,7 @@ const MODES = [
     ]
   },
   {
-    id: "midnight", group: "吃喝", icon: "🌙", label: "吃什麼宵夜", size: "md",
+    id: "midnight", group: "吃喝", icon: "🌙", label: "宵夜吃什麼", size: "md",
     hint: "半夜餓了？點一下球",
     initial: { primary: "吃什麼？", secondary: "點一下球" },
     noRepeat: true,
@@ -1413,7 +1413,7 @@ const MODES = [
     ]
   },
   {
-    id: "budget", group: "吃喝", icon: "💰", label: "這餐預算花多少", size: "xl",
+    id: "budget", group: "吃喝", icon: "💰", label: "這餐花多少", size: "xl",
     hint: "不知道花多少？點一下球",
     initial: { primary: "?", secondary: "這餐預算" },
     summary: "50 元，以及 100 到 7000 元每百元一階。常見價位權重較高，越貴出現機率越低。",
@@ -1467,7 +1467,7 @@ const MODES = [
     ]
   },
   {
-    id: "color", group: "決定", icon: "🎨", label: "選一個顏色", size: "md",
+    id: "color", group: "決定", icon: "🎨", label: "挑什麼顏色", size: "md",
     hint: "選色障礙？點一下球",
     initial: { primary: "哪個色？", secondary: "點一下球" },
     noRepeat: true,
@@ -1510,7 +1510,7 @@ const MODES = [
     ]
   },
   {
-    id: "movie", group: "決定", icon: "🎬", label: "看什麼類型的片", size: "md",
+    id: "movie", group: "決定", icon: "🎬", label: "看什麼片", size: "md",
     hint: "不知道看什麼？點一下球",
     initial: { primary: "看什麼？", secondary: "點一下球" },
     noRepeat: true,
@@ -1631,7 +1631,7 @@ const MODES = [
     ]
   },
   {
-    id: "number", group: "隨機", icon: "🔢", label: "0～100 猜數字", size: "xl",
+    id: "number", group: "隨機", icon: "🔢", label: "猜數字", size: "xl",
     hint: "點一下球，抽一個數字",
     initial: { primary: "?", secondary: "0 – 100" },
     summary: "0 到 100 之間的整數，每個數字機率相同。",
@@ -1639,7 +1639,7 @@ const MODES = [
     roll: () => ({ primary: String(Math.floor(Math.random() * 101)), secondary: "0 – 100" })
   },
   {
-    id: "card", group: "隨機", icon: "🃏", label: "抽一張撲克牌", size: "xl",
+    id: "card", group: "隨機", icon: "🃏", label: "抽撲克牌", size: "xl",
     hint: "點一下球，抽一張牌",
     initial: { primary: "?", secondary: "點一下球" },
     summary: "標準 52 張撲克牌（不含鬼牌），每張機率相同。",
@@ -2066,7 +2066,7 @@ const MODES = [
     ]
   },
   {
-    id: "games", group: "玩樂", icon: "🎪", label: "玩什麼團康", size: "md",
+    id: "games", group: "玩樂", icon: "🎪", label: "團康活動", size: "md",
     hint: "一群人不知道玩什麼？點一下球",
     initial: { primary: "玩什麼？", secondary: "點一下球" },
     noRepeat: true,
@@ -2124,7 +2124,7 @@ const MODES = [
     ]
   },
   {
-    id: "joke", group: "玩樂", icon: "😂", label: "笑話一則",
+    id: "joke", group: "玩樂", icon: "😂", label: "冷笑話",
     hint: "需要冷靜一下？點一下球",
     initial: { primary: "笑一個？", secondary: "點一下球" },
     noRepeat: true,
@@ -2232,7 +2232,7 @@ const MODES = [
     ]
   },
   {
-    id: "punish", group: "玩樂", icon: "🎭", label: "抽個懲罰", size: "md",
+    id: "punish", group: "玩樂", icon: "🎭", label: "懲罰遊戲", size: "md",
     hint: "願賭服輸，點一下球",
     initial: { primary: "抽什麼？", secondary: "點一下球" },
     noRepeat: true,
