@@ -10,7 +10,8 @@ body {
   background: #080b14;
   color: #e8eaf2;
   font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
-  padding: 24px;
+  /* 下方留白給左右下角的按鈕列與提示氣泡，footer 才不會被蓋到 */
+  padding: 24px 24px 116px;
   overflow-x: hidden;
 }
 h1 { font-size: 1.4rem; font-weight: 600; margin: 0; letter-spacing: .05em; }
@@ -342,14 +343,16 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
 .mode-list button[aria-current="true"] { background: rgba(255,255,255,.07); font-weight: 600; }
 .mode-list button[aria-current="true"]::after { content: "✓"; margin-left: auto; opacity: .7; }
 
+/* 四個角落各一組：左上＝模式、右上＝分享、左下＝總表、右下＝搖一搖與音效 */
 .corner-tools {
   position: fixed;
-  top: 16px;
-  right: 16px;
   z-index: 3;
   display: flex;
   gap: 8px;
 }
+.corner-tr { top: 16px; right: 16px; }
+.corner-bl { bottom: 16px; left: 16px; }
+.corner-br { bottom: 16px; right: 16px; }
 .tool-btn {
   width: 40px;
   height: 40px;
@@ -369,6 +372,23 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
 .tool-btn[aria-expanded="true"],
 .tool-btn[aria-pressed="true"] { opacity: 1; background: rgba(255,255,255,.12); }
 
+/* 桌機把視窗縮小、或把瀏覽器縮放拉到 150%／175% 時，畫面高度會不夠，
+   球（只看寬度）就會把 footer 擠出畫面外。這裡收緊間距，並讓球改以高度為上限，
+   字級跟著球等比縮小 —— 縮放本來就會再放大回去，實際看起來大小不變。
+   限定 min-width:700px 是為了不動到直立手機，橫躺的手機則會套用。 */
+@media (min-width: 560px) and (max-height: 720px) {
+  body {
+    --ball: min(84vw, 344px, calc(100vh - 186px));
+    gap: 12px;
+    padding: 12px 24px 64px;
+  }
+  h1 { font-size: 1.15rem; }
+  .ball { width: var(--ball); }
+  .answer { font-size: min(1.15rem, calc(var(--ball) * .0535)); }
+  .hint { font-size: .9rem; }
+  .toast { top: 68px; bottom: auto; }
+}
+
 /* 尊重系統的「減少動態效果」設定 */
 @media (prefers-reduced-motion: reduce) {
   .smoke span { animation: none; }
@@ -382,8 +402,8 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
 /* ---------- 這個模式的總表 ---------- */
 .list-panel {
   position: absolute;
-  right: 0;
-  top: 48px;
+  left: 0;
+  bottom: 48px;
   width: min(84vw, 400px);
   max-height: min(70vh, 560px);
   overflow-y: auto;
@@ -436,7 +456,10 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
 .toast {
   position: fixed;
   left: 50%;
-  bottom: 28px;
+  /* 左右下角現在各有一組按鈕（佔 16~56px），提示要浮在那一排上面 */
+  bottom: 72px;
+  max-width: calc(100vw - 32px);
+  white-space: nowrap;
   transform: translateX(-50%);
   z-index: 4;
   padding: 9px 16px;

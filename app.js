@@ -128,6 +128,7 @@ const swatch    = document.getElementById("swatch");
 const listBtn   = document.getElementById("listBtn");
 const shareBtn  = document.getElementById("shareBtn");
 const toastEl   = document.getElementById("toast");
+const motionBtn = document.getElementById("motionToggle");
 const listPanel = document.getElementById("listPanel");
 
 // 預設永遠是神奇八號球：每次打開都從這裡開始，不記上次選了什麼
@@ -191,7 +192,7 @@ function applyMode(next) {
   modeIcon.textContent = mode.icon;
   ball.setAttribute("aria-label", "搖動" + mode.label);
   showItem(mode.initial);
-  shareBtn.hidden = true;      // 還沒搖過，沒有結果可以分享
+  rolled = false;              // 換題目就回到「分享邀請」的狀態
   [...modeList.querySelectorAll("button")].forEach(b =>
     b.setAttribute("aria-current", String(b.dataset.id === mode.id)));
   if (!listPanel.hidden) renderList();
@@ -215,6 +216,7 @@ GROUPS.forEach(group => {
     btn.textContent = m.icon + "\u00A0\u00A0" + m.label;
     btn.addEventListener("click", () => {
       applyMode(m);
+      playIntro();
       track("mode_select", { mode: m.id, group: m.group });
       closeMenu();
       modeBtn.focus();
@@ -228,18 +230,6 @@ const sep = document.createElement("li");
 sep.className = "sep";
 sep.setAttribute("aria-hidden", "true");
 modeList.appendChild(sep);
-
-// 搖一搖：裝置有動作感測才顯示
-const motionLi = document.createElement("li");
-const motionBtn = document.createElement("button");
-motionBtn.type = "button";
-motionBtn.setAttribute("role", "menuitemcheckbox");
-motionLi.appendChild(motionBtn);
-const motionItem = typeof window.DeviceMotionEvent !== "undefined" ? motionLi : null;
-if (motionItem) {
-  motionBtn.addEventListener("click", () => toggleMotion());
-  modeList.appendChild(motionLi);
-}
 
 // 安裝：只有瀏覽器真的給了安裝提示才顯示，否則這個項目點了也沒反應
 const installLi = document.createElement("li");
@@ -313,14 +303,21 @@ function toast(msg) {
 }
 
 let current = null;                    // 目前顯示的項目，分享用
+let rolled = false;                    // 這個模式搖過了沒有，決定分享的內容
+const SHARE_CTA = "選擇困難的時候，讓神奇八號球幫你決定";
+const DEFAULT_MODE = MODES[0].id;
 shareBtn.addEventListener("click", async () => {
-  if (!current) return;
-  const text = `${mode.icon} ${mode.label}：${current.primary}（${current.secondary}）`;
+  // 還沒搖過就沒有結果可分享，改成分享一句邀請
+  const text = rolled
+    ? `${mode.icon} ${mode.label}：${current.primary}（${current.secondary}）`
+    : mode.id === DEFAULT_MODE            // 預設模式不用再報一次自己的名字
+      ? `${mode.icon} 神奇八號球 — ${SHARE_CTA}`
+      : `${mode.icon} ${SHARE_CTA}，來抽一題「${mode.label}」`;
   const url = location.href;
   try {
     if (navigator.share) {
       await navigator.share({ title: mode.label, text, url });
-      track("share", { method: "native", mode: mode.id });
+      track("share", { method: "native", mode: mode.id, input: rolled ? "result" : "cta" });
       return;
     }
   } catch (e) {
@@ -328,8 +325,8 @@ shareBtn.addEventListener("click", async () => {
   }
   try {
     await navigator.clipboard.writeText(text + "\n" + url);
-    track("share", { method: "clipboard", mode: mode.id });
-    toast("已複製結果");
+    track("share", { method: "clipboard", mode: mode.id, input: rolled ? "result" : "cta" });
+    toast(rolled ? "已複製結果" : "已複製連結");
   } catch (e) {
     toast("這個瀏覽器不支援分享");
   }
@@ -412,7 +409,7 @@ listBtn.addEventListener("click", e => {
   listPanel.hidden ? openList() : closeList();
 });
 document.addEventListener("click", e => {
-  if (!listPanel.hidden && !e.target.closest(".corner-tools")) closeList();
+  if (!listPanel.hidden && !e.target.closest(".corner-bl")) closeList();
 });
 
 function openMenu() {
@@ -442,6 +439,7 @@ document.addEventListener("keydown", e => {
 
 const ball = document.getElementById("ball");
 let rolling = false;
+let rollTimer = 0;
 
 function shake(source) {
   if (rolling) return;
@@ -456,10 +454,10 @@ function shake(source) {
   playShake();
   buzz();
 
-  setTimeout(() => {
+  rollTimer = setTimeout(() => {
     showItem(pick());
     answer.classList.remove("fade");
-    shareBtn.hidden = false;
+    rolled = true;
     rolling = false;
   }, 600);
 }
@@ -495,10 +493,9 @@ function onMotion(e) {
 function applyMotion() {
   window.removeEventListener("devicemotion", onMotion);
   if (motionOn) window.addEventListener("devicemotion", onMotion);
-  if (motionItem) {
-    motionBtn.textContent = "\u{1F4F3}\u00A0\u00A0搖一搖：" + (motionOn ? "開" : "關");
-    motionBtn.setAttribute("aria-pressed", String(motionOn));
-  }
+  motionBtn.hidden = !motionSupported;      // 沒有動作感測就不顯示這顆鈕
+  motionBtn.setAttribute("aria-pressed", String(motionOn));
+  motionBtn.setAttribute("aria-label", motionOn ? "關閉搖一搖" : "開啟搖一搖");
 }
 
 async function toggleMotion() {
@@ -516,7 +513,11 @@ async function toggleMotion() {
   motionOn = !motionOn;
   try { localStorage.setItem(MOTION_KEY, motionOn ? "on" : "off"); } catch (e) {}
   applyMotion();
+  // 圖示本身看不出開關狀態，所以用提示明講
+  toast(motionOn ? "已開啟搖一搖" : "已關閉搖一搖");
 }
+
+motionBtn.addEventListener("click", () => toggleMotion());
 
 const reduceMotion = window.matchMedia &&
                      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -536,14 +537,30 @@ applyMotion();
 
 /* ---------- 入場動畫 ---------- */
 // reduceMotion 在上面搖一搖那段已經算好了
-if (!reduceMotion) {
+function endIntro() { ball.classList.remove("intro"); }
+ball.addEventListener("animationend", e => {
+  if (e.animationName === "ball-drop") endIntro();
+});
+// 換題目等於換了一顆球，所以動畫會再跑一次
+let introTimer = 0;
+function playIntro() {
+  // 搖完之後 .shake 會留在球上，而它的 animation 在 CSS 裡排在 .intro 後面，
+  // 不清掉的話入場動畫根本不會播；搖到一半換題目也要把那一輪收掉
+  clearTimeout(rollTimer);
+  rolling = false;
+  ball.classList.remove("shake");
+  answer.classList.remove("fade");
+  if (reduceMotion) return;
+  clearTimeout(introTimer);
+  ball.classList.remove("intro");
+  void ball.offsetWidth;                      // 強制重排，動畫才會重播
   ball.classList.add("intro");
-  const endIntro = () => ball.classList.remove("intro");
-  ball.addEventListener("animationend", e => {
-    if (e.animationName === "ball-drop") endIntro();
-  });
   // 動畫事件沒送達時的保險（例如分頁在背景載入）
-  setTimeout(endIntro, 2600);
+  introTimer = setTimeout(endIntro, 2600);
+}
+
+playIntro();
+if (!reduceMotion) {
 
   // 球落定之後才提示選單，兩個動畫不要打架
   setTimeout(() => modeBtn.classList.add("hint"), 1400);
