@@ -118,8 +118,8 @@ for (const m of MODES || []) {
     const pair = it.primary + "\u0000" + it.secondary;
     if (seenPairs.has(pair)) fail(`${at}: 完全重複的項目「${it.primary} / ${it.secondary}」`);
     seenPairs.add(pair);
-    if (seenPrimary.has(it.primary) && m.id !== "fortune") {
-      warn(`${at}: 「${it.primary}」出現多次（小字不同），確認是刻意的`);
+    if (seenPrimary.has(it.primary) && !m.repeats) {
+      warn(`${at}: 「${it.primary}」出現多次（小字不同）；刻意的話請在模式上加 repeats: true`);
     }
     seenPrimary.add(it.primary);
 
