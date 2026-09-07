@@ -4,7 +4,7 @@
  * 不過就算忘了換也不會讓使用者卡在舊版：HTML 走 network-first，
  * 有網路時一律拿最新的，快取只是離線時的後備。
  */
-const VERSION = "magic8-v2";
+const VERSION = "magic8-v3";
 const ASSETS = [
   "./",
   "./index.html",

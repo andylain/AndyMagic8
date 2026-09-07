@@ -31,6 +31,7 @@
     <div class="window">
       <div class="tri-clip" aria-hidden="true"><div class="triangle"></div></div>
       <div class="answer" id="answer" data-mode="oracle" aria-live="polite">
+        <span class="swatch" id="swatch" aria-hidden="true" hidden></span>
         <span class="primary">Ask a question</span>
         <span class="secondary">問個問題吧</span>
       </div>
@@ -38,6 +39,12 @@
   </div>
 
   <p class="hint" id="hint">心中默想問題，然後點一下球</p>
+
+  <div class="list-menu">
+    <button class="list-btn" id="listBtn" aria-haspopup="dialog" aria-expanded="false"
+            aria-label="這個模式的總表" title="總表">📋</button>
+    <div class="list-panel" id="listPanel" role="dialog" aria-label="總表" hidden></div>
+  </div>
 
   <footer class="footer">
     Powered by <a href="https://andylain.com" target="_blank" rel="noopener">Andylain.com</a>

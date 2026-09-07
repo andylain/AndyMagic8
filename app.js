@@ -96,6 +96,9 @@ const hintEl    = document.getElementById("hint");
 const modeBtn   = document.getElementById("modeBtn");
 const modeIcon  = document.getElementById("modeBtnIcon");
 const modeList  = document.getElementById("modeList");
+const swatch    = document.getElementById("swatch");
+const listBtn   = document.getElementById("listBtn");
+const listPanel = document.getElementById("listPanel");
 
 // 預設永遠是神奇八號球：每次打開都從這裡開始，不記上次選了什麼
 let mode = MODES[0];
@@ -104,6 +107,9 @@ let lastItem = null;   // 只有 noRepeat 的模式會用到
 
 function showItem(item) {
   answer.style.color = (item.tone && TONES[item.tone]) || "";
+  // 直接帶色碼的項目（選一個顏色）多顯示一塊色票，深色系才看得見
+  swatch.hidden = !item.color;
+  if (item.color) swatch.style.background = item.color;
   answer.querySelector(".primary").textContent = item.primary;
   answer.querySelector(".secondary").textContent = item.secondary;
 }
@@ -133,18 +139,29 @@ function applyMode(next) {
   showItem(mode.initial);
   [...modeList.querySelectorAll("button")].forEach(b =>
     b.setAttribute("aria-current", String(b.dataset.id === mode.id)));
+  if (!listPanel.hidden) renderList();
 }
 
-MODES.forEach(m => {
-  const li = document.createElement("li");
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.setAttribute("role", "menuitem");
-  btn.dataset.id = m.id;
-  btn.textContent = m.icon + "\u00A0\u00A0" + m.label;
-  btn.addEventListener("click", () => { applyMode(m); closeMenu(); modeBtn.focus(); });
-  li.appendChild(btn);
-  modeList.appendChild(li);
+// 模式一多，平舖的選單會超出畫面，所以依 group 分段並加小標
+GROUPS.forEach(group => {
+  const inGroup = MODES.filter(m => m.group === group);
+  if (!inGroup.length) return;
+  const head = document.createElement("li");
+  head.className = "group";
+  head.setAttribute("aria-hidden", "true");
+  head.textContent = group;
+  modeList.appendChild(head);
+  inGroup.forEach(m => {
+    const li = document.createElement("li");
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.setAttribute("role", "menuitem");
+    btn.dataset.id = m.id;
+    btn.textContent = m.icon + "\u00A0\u00A0" + m.label;
+    btn.addEventListener("click", () => { applyMode(m); closeMenu(); modeBtn.focus(); });
+    li.appendChild(btn);
+    modeList.appendChild(li);
+  });
 });
 
 const sep = document.createElement("li");
@@ -186,6 +203,84 @@ aboutLi.innerHTML = '<a href="https://andylain.com" target="_blank" rel="noopene
                     '\u{1F464}\u00A0\u00A0關於作者</a>';
 modeList.appendChild(aboutLi);
 
+/* ---------- 這個模式的總表 ---------- */
+
+function renderList() {
+  listPanel.textContent = "";
+  const head = document.createElement("h2");
+  head.textContent = mode.icon + " " + mode.label;
+  listPanel.appendChild(head);
+
+  if (!mode.items) {                       // 用算的模式沒有清單，改顯示說明
+    const p = document.createElement("p");
+    p.className = "list-note";
+    p.textContent = mode.summary || "這個模式的結果是即時算出來的，沒有固定清單。";
+    listPanel.appendChild(p);
+    return;
+  }
+
+  const count = document.createElement("p");
+  count.className = "list-note";
+  count.textContent = "共 " + mode.items.length + " 種";
+  listPanel.appendChild(count);
+
+  // secondary 夠集中就當成分類（食物那種），否則它其實是每筆自己的說明，平舖就好
+  const cats = [...new Set(mode.items.map(i => i.secondary))];
+  if (cats.length <= mode.items.length / 3) {
+    cats.forEach(cat => {
+      const h = document.createElement("h3");
+      h.textContent = cat;
+      listPanel.appendChild(h);
+      const wrap = document.createElement("div");
+      wrap.className = "chips";
+      mode.items.filter(i => i.secondary === cat).forEach(i => {
+        const chip = document.createElement("span");
+        chip.className = "chip";
+        if (i.color) {
+          const dot = document.createElement("i");
+          dot.style.background = i.color;
+          chip.appendChild(dot);
+        }
+        chip.appendChild(document.createTextNode(i.primary));
+        if (i.tone && TONES[i.tone]) chip.style.color = TONES[i.tone];
+        wrap.appendChild(chip);
+      });
+      listPanel.appendChild(wrap);
+    });
+  } else {
+    const ul = document.createElement("ul");
+    ul.className = "rows";
+    mode.items.forEach(i => {
+      const li = document.createElement("li");
+      const b = document.createElement("b");
+      b.textContent = i.primary;
+      if (i.tone && TONES[i.tone]) b.style.color = TONES[i.tone];
+      li.appendChild(b);
+      li.appendChild(document.createTextNode(" " + i.secondary));
+      ul.appendChild(li);
+    });
+    listPanel.appendChild(ul);
+  }
+}
+
+function openList() {
+  renderList();
+  listPanel.hidden = false;
+  listBtn.setAttribute("aria-expanded", "true");
+}
+function closeList() {
+  listPanel.hidden = true;
+  listBtn.setAttribute("aria-expanded", "false");
+}
+listBtn.addEventListener("click", e => {
+  e.stopPropagation();
+  closeMenu();
+  listPanel.hidden ? openList() : closeList();
+});
+document.addEventListener("click", e => {
+  if (!listPanel.hidden && !e.target.closest(".list-menu")) closeList();
+});
+
 function openMenu() {
   modeList.hidden = false;
   modeBtn.setAttribute("aria-expanded", "true");
@@ -196,13 +291,16 @@ function closeMenu() {
 }
 modeBtn.addEventListener("click", e => {
   e.stopPropagation();
+  closeList();
   modeList.hidden ? openMenu() : closeMenu();
 });
 document.addEventListener("click", e => {
   if (!modeList.hidden && !e.target.closest(".mode-menu")) closeMenu();
 });
 document.addEventListener("keydown", e => {
-  if (e.key === "Escape" && !modeList.hidden) { closeMenu(); modeBtn.focus(); }
+  if (e.key !== "Escape") return;
+  if (!modeList.hidden) { closeMenu(); modeBtn.focus(); }
+  if (!listPanel.hidden) { closeList(); listBtn.focus(); }
 });
 
 /* ---------- 搖球 ---------- */

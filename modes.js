@@ -1,43 +1,78 @@
 /* 神奇八號球 —— 模式與清單資料。
  *
- * 要新增模式，往 MODES 推一筆就好，選單、標題、字級、配色都會自動跟上：
+ * 要新增模式，往 MODES 推一筆就好，選單、分組、標題、字級、配色、總表都會自動跟上：
  *
- *   { id, icon, label, size?, hint, initial, noRepeat?, items | roll }
+ *   { id, group, icon, label, size?, hint, initial, noRepeat?, items | roll, summary? }
  *
- *   size     "md" 詞彙 / "lg" YES-NO / "xl" 單一符號或數字；省略為預設字級
+ *   group    選單分組，出現順序見 GROUPS
+ *   size     "md" 詞彙 / "lg" 短詞 / "xl" 單一符號或數字；省略為預設字級
  *   noRepeat 避開連續抽到同一項（清單長度 <= 2 時自動忽略）
- *   items    { primary, secondary, tone }，tone 對應下面的 TONES
+ *   items    { primary, secondary, tone? , color? }
+ *            tone  對應下面的 TONES，決定文字顏色
+ *            color 直接給色碼，會在答案上方顯示色塊（給「選一個顏色」用）
  *   roll     選項太多不適合列清單時，改用它直接算（有 roll 就不需要 items）
+ *   summary  roll 模式在總表裡顯示的說明文字
  */
 
+const GROUPS = ["占卜", "吃喝", "決定", "隨機", "玩樂"];
+
 const TONES = {
-  yes:     "#4ade80",
-  no:      "#f87171",
-  maybe:   "#fbbf24",
-  snack:   "#fbbf24",
-  noodle:  "#fb923c",
-  rice:    "#a3e635",
-  intl:    "#f472b6",
-  light:   "#5eead4",
-  tea:     "#86efac",
-  coffee:  "#c8a165",
-  fizz:    "#7dd3fc",
-  sweet:   "#fda4af",
-  asia:    "#fca5a5",
-  europe:  "#93c5fd",
-  america: "#fcd34d",
-  africa:  "#fdba74",
-  mideast: "#a7f3d0",
-  perform: "#c4b5fd",
-  action:  "#fca5a5",
-  talk:    "#7dd3fc",
-  task:    "#fcd34d",
-  silly:   "#f0abfc"
+  yes:      "#4ade80",
+  no:       "#f87171",
+  maybe:    "#fbbf24",
+  snack:    "#fbbf24",
+  noodle:   "#fb923c",
+  rice:     "#a3e635",
+  intl:     "#f472b6",
+  light:    "#5eead4",
+  tea:      "#86efac",
+  coffee:   "#c8a165",
+  fizz:     "#7dd3fc",
+  sweet:    "#fda4af",
+  asia:     "#fca5a5",
+  europe:   "#93c5fd",
+  america:  "#fcd34d",
+  africa:   "#fdba74",
+  mideast:  "#a7f3d0",
+  perform:  "#c4b5fd",
+  action:   "#fca5a5",
+  talk:     "#7dd3fc",
+  task:     "#fcd34d",
+  silly:    "#f0abfc",
+  fried:    "#fdba74",
+  grill:    "#fb7185",
+  soup:     "#7dd3fc",
+  dessert:  "#f0abfc",
+  casual:   "#fcd34d",
+  formal:   "#93c5fd",
+  sporty:   "#86efac",
+  artsy:    "#c4b5fd",
+  comfy:    "#fda4af",
+  season:   "#5eead4",
+  red:      "#f87171",
+  black:    "#e8eaf2"
 };
+
+// 預算：常見價位權重高，越貴越少出現
+const BUDGETS = (() => {
+  const vals = [50].concat(Array.from({ length: 70 }, (_, i) => (i + 1) * 100));
+  const weight = v => v <= 600 ? 100 : v <= 1000 ? 50 : v <= 2000 ? 15 : 2;
+  const pool = [];
+  vals.forEach(v => { for (let i = 0; i < weight(v); i++) pool.push(v); });
+  return pool;
+})();
+
+const SUITS = [
+  { sym: "\u2660", name: "黑桃", tone: "black" },
+  { sym: "\u2665", name: "紅心", tone: "red" },
+  { sym: "\u2666", name: "方塊", tone: "red" },
+  { sym: "\u2663", name: "梅花", tone: "black" }
+];
+const RANKS = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
 
 const MODES = [
   {
-    id: "oracle", icon: "🎱", label: "神奇八號球",
+    id: "oracle", group: "占卜", icon: "🎱", label: "神奇八號球",
     hint: "心中默想問題，然後點一下球",
     initial: { primary: "Ask a question", secondary: "問個問題吧" },
     items: [
@@ -64,7 +99,39 @@ const MODES = [
     ]
   },
   {
-    id: "food", icon: "🍽️", label: "今天吃什麼", size: "md",
+    id: "fortune", group: "占卜", icon: "🍀", label: "今日運勢", size: "lg",
+    hint: "想知道今天如何？點一下球",
+    initial: { primary: "?", secondary: "點一下球" },
+    items: [
+      { primary: "大吉", secondary: "諸事順遂，放手去做", tone: "yes" },
+      { primary: "大吉", secondary: "貴人在側，開口就對", tone: "yes" },
+      { primary: "大吉", secondary: "水到渠成，時機正好", tone: "yes" },
+      { primary: "大吉", secondary: "久候之事，今日有音", tone: "yes" },
+      { primary: "中吉", secondary: "穩步前行，不必著急", tone: "tea" },
+      { primary: "中吉", secondary: "小有斬獲，值得一試", tone: "tea" },
+      { primary: "中吉", secondary: "先做再說，邊走邊修", tone: "tea" },
+      { primary: "中吉", secondary: "舊識帶來新機會", tone: "tea" },
+      { primary: "中吉", secondary: "財務平穩，可小額投入", tone: "tea" },
+      { primary: "中吉", secondary: "健康無虞，記得休息", tone: "tea" },
+      { primary: "小吉", secondary: "事緩則圓，別搶快", tone: "maybe" },
+      { primary: "小吉", secondary: "付出多於回收，但值得", tone: "maybe" },
+      { primary: "小吉", secondary: "有波折，結果尚可", tone: "maybe" },
+      { primary: "小吉", secondary: "宜守不宜攻", tone: "maybe" },
+      { primary: "小吉", secondary: "先問清楚再答應", tone: "maybe" },
+      { primary: "小吉", secondary: "小心口舌，多聽少說", tone: "maybe" },
+      { primary: "末吉", secondary: "時機未到，再等等", tone: "fried" },
+      { primary: "末吉", secondary: "計畫需重擬", tone: "fried" },
+      { primary: "末吉", secondary: "破財消災，別太在意", tone: "fried" },
+      { primary: "末吉", secondary: "今日宜獨處", tone: "fried" },
+      { primary: "末吉", secondary: "別勉強，明天再說", tone: "fried" },
+      { primary: "凶",  secondary: "三思而後行", tone: "no" },
+      { primary: "凶",  secondary: "今日不宜做重大決定", tone: "no" },
+      { primary: "凶",  secondary: "慎防輕信他人", tone: "no" },
+      { primary: "凶",  secondary: "退一步，海闊天空", tone: "no" }
+    ]
+  },
+  {
+    id: "food", group: "吃喝", icon: "🍽️", label: "今天吃什麼", size: "md",
     hint: "肚子餓了？點一下球",
     initial: { primary: "吃什麼？", secondary: "點一下球" },
     noRepeat: true,
@@ -172,7 +239,115 @@ const MODES = [
     ]
   },
   {
-    id: "cuisine", icon: "🌍", label: "吃哪一國料理", size: "md",
+    id: "night", group: "吃喝", icon: "🌃", label: "夜市吃什麼", size: "md",
+    hint: "逛夜市選擇障礙？點一下球",
+    initial: { primary: "吃什麼？", secondary: "點一下球" },
+    noRepeat: true,
+    items: [
+      { primary: "蚵仔煎",    secondary: "小吃", tone: "snack" },
+      { primary: "大腸包小腸",  secondary: "小吃", tone: "snack" },
+      { primary: "臭豆腐",    secondary: "小吃", tone: "snack" },
+      { primary: "肉圓",     secondary: "小吃", tone: "snack" },
+      { primary: "蚵仔麵線",   secondary: "小吃", tone: "snack" },
+      { primary: "藥燉排骨",   secondary: "小吃", tone: "snack" },
+      { primary: "生炒花枝",   secondary: "小吃", tone: "snack" },
+      { primary: "淡水阿給",   secondary: "小吃", tone: "snack" },
+      { primary: "潤餅",     secondary: "小吃", tone: "snack" },
+      { primary: "筒仔米糕",   secondary: "小吃", tone: "snack" },
+      { primary: "刈包",     secondary: "小吃", tone: "snack" },
+      { primary: "肉羹",     secondary: "小吃", tone: "snack" },
+      { primary: "豬血糕",    secondary: "小吃", tone: "snack" },
+      { primary: "米糕",     secondary: "小吃", tone: "snack" },
+      { primary: "麵線糊",    secondary: "小吃", tone: "snack" },
+      { primary: "蝦仁煎",    secondary: "小吃", tone: "snack" },
+      { primary: "花枝羹",    secondary: "小吃", tone: "snack" },
+      { primary: "魯味",     secondary: "小吃", tone: "snack" },
+      { primary: "涼麵",     secondary: "小吃", tone: "snack" },
+      { primary: "米粉炒",    secondary: "小吃", tone: "snack" },
+      { primary: "肉粽",     secondary: "小吃", tone: "snack" },
+      { primary: "碗粿",     secondary: "小吃", tone: "snack" },
+      { primary: "蔥油餅",    secondary: "小吃", tone: "snack" },
+      { primary: "胡椒餅",    secondary: "小吃", tone: "snack" },
+      { primary: "水煎包",    secondary: "小吃", tone: "snack" },
+      { primary: "鹹酥雞",    secondary: "炸物", tone: "fried" },
+      { primary: "雞排",     secondary: "炸物", tone: "fried" },
+      { primary: "地瓜球",    secondary: "炸物", tone: "fried" },
+      { primary: "炸魷魚",    secondary: "炸物", tone: "fried" },
+      { primary: "炸蝦捲",    secondary: "炸物", tone: "fried" },
+      { primary: "甜不辣",    secondary: "炸物", tone: "fried" },
+      { primary: "炸銀絲卷",   secondary: "炸物", tone: "fried" },
+      { primary: "炸豆腐",    secondary: "炸物", tone: "fried" },
+      { primary: "炸年糕",    secondary: "炸物", tone: "fried" },
+      { primary: "薯條",     secondary: "炸物", tone: "fried" },
+      { primary: "洋蔥圈",    secondary: "炸物", tone: "fried" },
+      { primary: "炸花枝丸",   secondary: "炸物", tone: "fried" },
+      { primary: "炸雞翅",    secondary: "炸物", tone: "fried" },
+      { primary: "炸杏鮑菇",   secondary: "炸物", tone: "fried" },
+      { primary: "炸四季豆",   secondary: "炸物", tone: "fried" },
+      { primary: "鹽酥菇",    secondary: "炸物", tone: "fried" },
+      { primary: "炸小卷",    secondary: "炸物", tone: "fried" },
+      { primary: "炸糯米腸",   secondary: "炸物", tone: "fried" },
+      { primary: "炸湯圓",    secondary: "炸物", tone: "fried" },
+      { primary: "炸天婦羅",   secondary: "炸物", tone: "fried" },
+      { primary: "烤香腸",    secondary: "燒烤", tone: "grill" },
+      { primary: "烤玉米",    secondary: "燒烤", tone: "grill" },
+      { primary: "串燒",     secondary: "燒烤", tone: "grill" },
+      { primary: "烤魷魚",    secondary: "燒烤", tone: "grill" },
+      { primary: "烤肉串",    secondary: "燒烤", tone: "grill" },
+      { primary: "烤雞翅",    secondary: "燒烤", tone: "grill" },
+      { primary: "烤棉花糖",   secondary: "燒烤", tone: "grill" },
+      { primary: "烤秋刀魚",   secondary: "燒烤", tone: "grill" },
+      { primary: "鐵板豆腐",   secondary: "燒烤", tone: "grill" },
+      { primary: "鐵板牛排",   secondary: "燒烤", tone: "grill" },
+      { primary: "烤大腸",    secondary: "燒烤", tone: "grill" },
+      { primary: "烤鳥蛋",    secondary: "燒烤", tone: "grill" },
+      { primary: "烤米腸",    secondary: "燒烤", tone: "grill" },
+      { primary: "烤蔬菜",    secondary: "燒烤", tone: "grill" },
+      { primary: "碳烤雞排",   secondary: "燒烤", tone: "grill" },
+      { primary: "四神湯",    secondary: "湯品", tone: "soup" },
+      { primary: "貢丸湯",    secondary: "湯品", tone: "soup" },
+      { primary: "魚丸湯",    secondary: "湯品", tone: "soup" },
+      { primary: "蛤蜊湯",    secondary: "湯品", tone: "soup" },
+      { primary: "酸辣湯",    secondary: "湯品", tone: "soup" },
+      { primary: "味噌湯",    secondary: "湯品", tone: "soup" },
+      { primary: "豬血湯",    secondary: "湯品", tone: "soup" },
+      { primary: "香菇雞湯",   secondary: "湯品", tone: "soup" },
+      { primary: "當歸鴨",    secondary: "湯品", tone: "soup" },
+      { primary: "肉羹湯",    secondary: "湯品", tone: "soup" },
+      { primary: "苦瓜排骨湯",  secondary: "湯品", tone: "soup" },
+      { primary: "冬瓜蛤蜊湯",  secondary: "湯品", tone: "soup" },
+      { primary: "車輪餅",    secondary: "甜品", tone: "dessert" },
+      { primary: "雞蛋糕",    secondary: "甜品", tone: "dessert" },
+      { primary: "豆花",     secondary: "甜品", tone: "dessert" },
+      { primary: "芋圓",     secondary: "甜品", tone: "dessert" },
+      { primary: "燒仙草",    secondary: "甜品", tone: "dessert" },
+      { primary: "麻糬",     secondary: "甜品", tone: "dessert" },
+      { primary: "蜜糖吐司",   secondary: "甜品", tone: "dessert" },
+      { primary: "棉花糖",    secondary: "甜品", tone: "dessert" },
+      { primary: "糖葫蘆",    secondary: "甜品", tone: "dessert" },
+      { primary: "紅豆餅",    secondary: "甜品", tone: "dessert" },
+      { primary: "泡芙",     secondary: "甜品", tone: "dessert" },
+      { primary: "冰淇淋",    secondary: "甜品", tone: "dessert" },
+      { primary: "剉冰",     secondary: "甜品", tone: "dessert" },
+      { primary: "芒果冰",    secondary: "甜品", tone: "dessert" },
+      { primary: "花生捲冰淇淋", secondary: "甜品", tone: "dessert" },
+      { primary: "甜甜圈",    secondary: "甜品", tone: "dessert" },
+      { primary: "珍珠奶茶",   secondary: "飲料", tone: "tea" },
+      { primary: "冬瓜茶",    secondary: "飲料", tone: "tea" },
+      { primary: "木瓜牛奶",   secondary: "飲料", tone: "tea" },
+      { primary: "甘蔗汁",    secondary: "飲料", tone: "tea" },
+      { primary: "青草茶",    secondary: "飲料", tone: "tea" },
+      { primary: "檸檬愛玉",   secondary: "飲料", tone: "tea" },
+      { primary: "楊桃汁",    secondary: "飲料", tone: "tea" },
+      { primary: "酸梅湯",    secondary: "飲料", tone: "tea" },
+      { primary: "現榨果汁",   secondary: "飲料", tone: "tea" },
+      { primary: "仙草蜜",    secondary: "飲料", tone: "tea" },
+      { primary: "米漿",     secondary: "飲料", tone: "tea" },
+      { primary: "綠豆沙",    secondary: "飲料", tone: "tea" }
+    ]
+  },
+  {
+    id: "cuisine", group: "吃喝", icon: "🌍", label: "吃哪一國料理", size: "md",
     hint: "想換換口味？點一下球",
     initial: { primary: "哪一國？", secondary: "點一下球" },
     noRepeat: true,
@@ -230,7 +405,7 @@ const MODES = [
     ]
   },
   {
-    id: "drink", icon: "🧋", label: "喝什麼飲料", size: "md",
+    id: "drink", group: "吃喝", icon: "🧋", label: "喝什麼飲料", size: "md",
     hint: "口渴了？點一下球",
     initial: { primary: "喝什麼？", secondary: "點一下球" },
     noRepeat: true,
@@ -338,7 +513,7 @@ const MODES = [
     ]
   },
   {
-    id: "midnight", icon: "🌙", label: "吃什麼宵夜", size: "md",
+    id: "midnight", group: "吃喝", icon: "🌙", label: "吃什麼宵夜", size: "md",
     hint: "半夜餓了？點一下球",
     initial: { primary: "吃什麼？", secondary: "點一下球" },
     noRepeat: true,
@@ -446,7 +621,256 @@ const MODES = [
     ]
   },
   {
-    id: "punish", icon: "🎭", label: "抽個懲罰", size: "md",
+    id: "budget", group: "吃喝", icon: "💰", label: "這餐預算花多少", size: "xl",
+    hint: "不知道花多少？點一下球",
+    initial: { primary: "?", secondary: "這餐預算" },
+    summary: "50 元，以及 100 到 7000 元每百元一階。常見價位權重較高，越貴出現機率越低。",
+    // 常見價位權重高，越貴越少出現
+    roll: () => {
+      const v = BUDGETS[Math.floor(Math.random() * BUDGETS.length)];
+      return { primary: "$" + v, secondary: "這餐預算" };
+    }
+  },
+  {
+    id: "outfit", group: "決定", icon: "👕", label: "今天穿什麼", size: "md",
+    hint: "不知道穿什麼？點一下球",
+    initial: { primary: "穿什麼？", secondary: "點一下球" },
+    noRepeat: true,
+    items: [
+      { primary: "休閒風",        secondary: "休閒", tone: "casual" },
+      { primary: "全黑穿搭",       secondary: "休閒", tone: "casual" },
+      { primary: "牛仔風",        secondary: "休閒", tone: "casual" },
+      { primary: "街頭風",        secondary: "休閒", tone: "casual" },
+      { primary: "寬鬆oversize", secondary: "休閒", tone: "casual" },
+      { primary: "素T風",        secondary: "休閒", tone: "casual" },
+      { primary: "學院風",        secondary: "休閒", tone: "casual" },
+      { primary: "工裝風",        secondary: "休閒", tone: "casual" },
+      { primary: "正式西裝",       secondary: "正式", tone: "formal" },
+      { primary: "商務休閒",       secondary: "正式", tone: "formal" },
+      { primary: "襯衫風",        secondary: "正式", tone: "formal" },
+      { primary: "洋裝",         secondary: "正式", tone: "formal" },
+      { primary: "套裝",         secondary: "正式", tone: "formal" },
+      { primary: "半正式",        secondary: "正式", tone: "formal" },
+      { primary: "運動風",        secondary: "運動", tone: "sporty" },
+      { primary: "機能風",        secondary: "運動", tone: "sporty" },
+      { primary: "瑜珈服",        secondary: "運動", tone: "sporty" },
+      { primary: "慢跑裝",        secondary: "運動", tone: "sporty" },
+      { primary: "文青風",        secondary: "文青", tone: "artsy" },
+      { primary: "復古風",        secondary: "文青", tone: "artsy" },
+      { primary: "森林系",        secondary: "文青", tone: "artsy" },
+      { primary: "日系",         secondary: "文青", tone: "artsy" },
+      { primary: "韓系",         secondary: "文青", tone: "artsy" },
+      { primary: "極簡風",        secondary: "文青", tone: "artsy" },
+      { primary: "法式風",        secondary: "文青", tone: "artsy" },
+      { primary: "居家風",        secondary: "舒適", tone: "comfy" },
+      { primary: "睡衣風",        secondary: "舒適", tone: "comfy" },
+      { primary: "寬鬆舒適",       secondary: "舒適", tone: "comfy" },
+      { primary: "棉麻風",        secondary: "舒適", tone: "comfy" },
+      { primary: "洋蔥式",        secondary: "看天氣", tone: "season" },
+      { primary: "短袖短褲",       secondary: "看天氣", tone: "season" },
+      { primary: "長袖長褲",       secondary: "看天氣", tone: "season" },
+      { primary: "大衣風",        secondary: "看天氣", tone: "season" },
+      { primary: "外套疊穿",       secondary: "看天氣", tone: "season" },
+      { primary: "防曬全副武裝",     secondary: "看天氣", tone: "season" }
+    ]
+  },
+  {
+    id: "color", group: "決定", icon: "🎨", label: "選一個顏色", size: "md",
+    hint: "選色障礙？點一下球",
+    initial: { primary: "哪個色？", secondary: "點一下球" },
+    noRepeat: true,
+    items: [
+      { primary: "大紅",  secondary: "紅色系", color: "#e63946" },
+      { primary: "酒紅",  secondary: "紅色系", color: "#7d1128" },
+      { primary: "珊瑚",  secondary: "紅色系", color: "#ff7f50" },
+      { primary: "桃紅",  secondary: "粉色系", color: "#ff006e" },
+      { primary: "粉紅",  secondary: "粉色系", color: "#ff85a2" },
+      { primary: "玫瑰",  secondary: "粉色系", color: "#ffafcc" },
+      { primary: "蜜桃",  secondary: "粉色系", color: "#ffcba4" },
+      { primary: "橘",   secondary: "橙黃系", color: "#f77f00" },
+      { primary: "鵝黃",  secondary: "橙黃系", color: "#ffd60a" },
+      { primary: "檸檬黃", secondary: "橙黃系", color: "#eaff6b" },
+      { primary: "金",   secondary: "橙黃系", color: "#d4af37" },
+      { primary: "銅",   secondary: "橙黃系", color: "#b87333" },
+      { primary: "萊姆綠", secondary: "綠色系", color: "#9ef01a" },
+      { primary: "草綠",  secondary: "綠色系", color: "#38b000" },
+      { primary: "墨綠",  secondary: "綠色系", color: "#14532d" },
+      { primary: "薄荷",  secondary: "綠色系", color: "#98ff98" },
+      { primary: "青綠",  secondary: "綠色系", color: "#06d6a0" },
+      { primary: "天藍",  secondary: "藍色系", color: "#48cae4" },
+      { primary: "寶藍",  secondary: "藍色系", color: "#0077b6" },
+      { primary: "深藍",  secondary: "藍色系", color: "#023e8a" },
+      { primary: "藏青",  secondary: "藍色系", color: "#1e293b" },
+      { primary: "藍綠",  secondary: "藍色系", color: "#0891b2" },
+      { primary: "靛",   secondary: "紫色系", color: "#3f37c9" },
+      { primary: "紫",   secondary: "紫色系", color: "#7b2cbf" },
+      { primary: "薰衣草", secondary: "紫色系", color: "#c8b6ff" },
+      { primary: "咖啡",  secondary: "大地色", color: "#6f4518" },
+      { primary: "卡其",  secondary: "大地色", color: "#c2b280" },
+      { primary: "米白",  secondary: "大地色", color: "#f5f0e1" },
+      { primary: "象牙",  secondary: "大地色", color: "#fffff0" },
+      { primary: "純白",  secondary: "無彩色", color: "#ffffff" },
+      { primary: "淺灰",  secondary: "無彩色", color: "#cfd2cd" },
+      { primary: "中灰",  secondary: "無彩色", color: "#808080" },
+      { primary: "深灰",  secondary: "無彩色", color: "#4a4a4a" },
+      { primary: "純黑",  secondary: "無彩色", color: "#111111" },
+      { primary: "銀",   secondary: "無彩色", color: "#c0c0c0" }
+    ]
+  },
+  {
+    id: "movie", group: "決定", icon: "🎬", label: "看什麼類型的片", size: "md",
+    hint: "不知道看什麼？點一下球",
+    initial: { primary: "看什麼？", secondary: "點一下球" },
+    noRepeat: true,
+    items: [
+      { primary: "動作",   secondary: "刺激", tone: "grill" },
+      { primary: "恐怖",   secondary: "刺激", tone: "grill" },
+      { primary: "懸疑",   secondary: "刺激", tone: "grill" },
+      { primary: "犯罪",   secondary: "刺激", tone: "grill" },
+      { primary: "戰爭",   secondary: "刺激", tone: "grill" },
+      { primary: "災難",   secondary: "刺激", tone: "grill" },
+      { primary: "心理驚悚", secondary: "刺激", tone: "grill" },
+      { primary: "諜報",   secondary: "刺激", tone: "grill" },
+      { primary: "超級英雄", secondary: "刺激", tone: "grill" },
+      { primary: "怪獸片",  secondary: "刺激", tone: "grill" },
+      { primary: "復仇爽片", secondary: "刺激", tone: "grill" },
+      { primary: "喜劇",   secondary: "輕鬆", tone: "snack" },
+      { primary: "動畫",   secondary: "輕鬆", tone: "snack" },
+      { primary: "音樂劇",  secondary: "輕鬆", tone: "snack" },
+      { primary: "校園",   secondary: "輕鬆", tone: "snack" },
+      { primary: "黑色幽默", secondary: "輕鬆", tone: "snack" },
+      { primary: "溫馨小品", secondary: "輕鬆", tone: "snack" },
+      { primary: "深夜療癒", secondary: "輕鬆", tone: "snack" },
+      { primary: "愛情",   secondary: "情感", tone: "dessert" },
+      { primary: "傳記",   secondary: "情感", tone: "dessert" },
+      { primary: "運動片",  secondary: "情感", tone: "dessert" },
+      { primary: "職人",   secondary: "情感", tone: "dessert" },
+      { primary: "公路電影", secondary: "情感", tone: "dessert" },
+      { primary: "科幻",   secondary: "腦洞", tone: "fizz" },
+      { primary: "奇幻",   secondary: "腦洞", tone: "fizz" },
+      { primary: "太空科幻", secondary: "腦洞", tone: "fizz" },
+      { primary: "紀錄片",  secondary: "寫實", tone: "light" },
+      { primary: "歷史",   secondary: "寫實", tone: "light" },
+      { primary: "西部",   secondary: "寫實", tone: "light" },
+      { primary: "法庭劇",  secondary: "寫實", tone: "light" }
+    ]
+  },
+  {
+    id: "transport", group: "決定", icon: "🚗", label: "怎麼去", size: "md",
+    hint: "不知道怎麼去？點一下球",
+    initial: { primary: "怎麼去？", secondary: "點一下球" },
+    noRepeat: true,
+    items: [
+      { primary: "走路",    secondary: "自己來", tone: "casual" },
+      { primary: "騎腳踏車",  secondary: "自己來", tone: "casual" },
+      { primary: "騎機車",   secondary: "自己來", tone: "casual" },
+      { primary: "開車",    secondary: "自己來", tone: "casual" },
+      { primary: "共享單車",  secondary: "自己來", tone: "casual" },
+      { primary: "公車",    secondary: "大眾運輸", tone: "fizz" },
+      { primary: "捷運",    secondary: "大眾運輸", tone: "fizz" },
+      { primary: "火車",    secondary: "大眾運輸", tone: "fizz" },
+      { primary: "高鐵",    secondary: "大眾運輸", tone: "fizz" },
+      { primary: "步行加捷運", secondary: "大眾運輸", tone: "fizz" },
+      { primary: "計程車",   secondary: "叫車", tone: "formal" },
+      { primary: "叫Uber", secondary: "叫車", tone: "formal" }
+    ]
+  },
+  {
+    id: "sport", group: "決定", icon: "🏃", label: "做什麼運動", size: "md",
+    hint: "不知道練什麼？點一下球",
+    initial: { primary: "練什麼？", secondary: "點一下球" },
+    noRepeat: true,
+    items: [
+      { primary: "慢跑",   secondary: "有氧", tone: "soup" },
+      { primary: "快走",   secondary: "有氧", tone: "soup" },
+      { primary: "游泳",   secondary: "有氧", tone: "soup" },
+      { primary: "騎車",   secondary: "有氧", tone: "soup" },
+      { primary: "跳繩",   secondary: "有氧", tone: "soup" },
+      { primary: "飛輪",   secondary: "有氧", tone: "soup" },
+      { primary: "划船機",  secondary: "有氧", tone: "soup" },
+      { primary: "重訓",   secondary: "肌力", tone: "grill" },
+      { primary: "深蹲",   secondary: "肌力", tone: "grill" },
+      { primary: "伏地挺身", secondary: "肌力", tone: "grill" },
+      { primary: "核心訓練", secondary: "肌力", tone: "grill" },
+      { primary: "徒手健身", secondary: "肌力", tone: "grill" },
+      { primary: "TRX",  secondary: "肌力", tone: "grill" },
+      { primary: "瑜珈",   secondary: "伸展", tone: "light" },
+      { primary: "皮拉提斯", secondary: "伸展", tone: "light" },
+      { primary: "拉筋伸展", secondary: "伸展", tone: "light" },
+      { primary: "太極",   secondary: "伸展", tone: "light" },
+      { primary: "打籃球",  secondary: "球類", tone: "snack" },
+      { primary: "打羽球",  secondary: "球類", tone: "snack" },
+      { primary: "打桌球",  secondary: "球類", tone: "snack" },
+      { primary: "打網球",  secondary: "球類", tone: "snack" },
+      { primary: "踢足球",  secondary: "球類", tone: "snack" },
+      { primary: "打排球",  secondary: "球類", tone: "snack" },
+      { primary: "爬山",   secondary: "戶外", tone: "dessert" },
+      { primary: "健行",   secondary: "戶外", tone: "dessert" },
+      { primary: "攀岩",   secondary: "戶外", tone: "dessert" },
+      { primary: "溜冰",   secondary: "戶外", tone: "dessert" },
+      { primary: "滑板",   secondary: "戶外", tone: "dessert" },
+      { primary: "舞蹈",   secondary: "戶外", tone: "dessert" },
+      { primary: "拳擊有氧", secondary: "戶外", tone: "dessert" }
+    ]
+  },
+  {
+    id: "dice", group: "隨機", icon: "🎲", label: "擲骰子", size: "xl",
+    hint: "點一下球，擲出點數",
+    initial: { primary: "?", secondary: "點一下球" },
+    items: [
+      { primary: "⚀", secondary: "1 點" },
+      { primary: "⚁", secondary: "2 點" },
+      { primary: "⚂", secondary: "3 點" },
+      { primary: "⚃", secondary: "4 點" },
+      { primary: "⚄", secondary: "5 點" },
+      { primary: "⚅", secondary: "6 點" }
+    ]
+  },
+  {
+    id: "number", group: "隨機", icon: "🔢", label: "0～100 猜數字", size: "xl",
+    hint: "點一下球，抽一個數字",
+    initial: { primary: "?", secondary: "0 – 100" },
+    summary: "0 到 100 之間的整數，每個數字機率相同。",
+    // 101 個值列成清單太蠢，直接算
+    roll: () => ({ primary: String(Math.floor(Math.random() * 101)), secondary: "0 – 100" })
+  },
+  {
+    id: "card", group: "隨機", icon: "🃏", label: "抽一張撲克牌", size: "xl",
+    hint: "點一下球，抽一張牌",
+    initial: { primary: "?", secondary: "點一下球" },
+    summary: "標準 52 張撲克牌（不含鬼牌），每張機率相同。",
+    roll: () => {
+      const s = SUITS[Math.floor(Math.random() * 4)];
+      const r = RANKS[Math.floor(Math.random() * 13)];
+      return { primary: s.sym + r, secondary: s.name + " " + r, tone: s.tone };
+    }
+  },
+  {
+    id: "yesno", group: "隨機", icon: "⚖️", label: "Yes or No", size: "lg",
+    hint: "問一個是非題，點一下球",
+    initial: { primary: "?", secondary: "點一下球" },
+    items: [
+      { primary: "YES", secondary: "是", tone: "yes" },
+      { primary: "NO",  secondary: "否", tone: "no" }
+    ]
+  },
+  {
+    id: "compass", group: "隨機", icon: "🧭", label: "往哪走", size: "xl",
+    hint: "不知道往哪走？點一下球",
+    initial: { primary: "?", secondary: "點一下球" },
+    items: [
+      { primary: "⬆️", secondary: "前" },
+      { primary: "↗️", secondary: "右前" },
+      { primary: "➡️", secondary: "右" },
+      { primary: "↘️", secondary: "右後" },
+      { primary: "⬇️", secondary: "後" },
+      { primary: "↙️", secondary: "左後" },
+      { primary: "⬅️", secondary: "左" },
+      { primary: "↖️", secondary: "左前" }
+    ]
+  },
+  {
+    id: "punish", group: "玩樂", icon: "🎭", label: "抽個懲罰", size: "md",
     hint: "願賭服輸，點一下球",
     initial: { primary: "抽什麼？", secondary: "點一下球" },
     noRepeat: true,
@@ -481,50 +905,6 @@ const MODES = [
       { primary: "用怪腔調說話", secondary: "搞怪", tone: "silly" },
       { primary: "頂東西走一圈", secondary: "搞怪", tone: "silly" },
       { primary: "帽子反戴到底", secondary: "搞怪", tone: "silly" }
-    ]
-  },
-  {
-    id: "dice", icon: "🎲", label: "擲骰子", size: "xl",
-    hint: "點一下球，擲出點數",
-    initial: { primary: "?", secondary: "點一下球" },
-    items: [
-      { primary: "⚀", secondary: "1 點", tone: "" },
-      { primary: "⚁", secondary: "2 點", tone: "" },
-      { primary: "⚂", secondary: "3 點", tone: "" },
-      { primary: "⚃", secondary: "4 點", tone: "" },
-      { primary: "⚄", secondary: "5 點", tone: "" },
-      { primary: "⚅", secondary: "6 點", tone: "" }
-    ]
-  },
-  {
-    id: "number", icon: "🔢", label: "0～100 猜數字", size: "xl",
-    hint: "點一下球，抽一個數字",
-    initial: { primary: "?", secondary: "0 – 100" },
-    // 101 個值列成清單太蠢，直接算
-    roll: () => ({ primary: String(Math.floor(Math.random() * 101)), secondary: "0 – 100" })
-  },
-  {
-    id: "yesno", icon: "⚖️", label: "Yes or No", size: "lg",
-    hint: "問一個是非題，點一下球",
-    initial: { primary: "?", secondary: "點一下球" },
-    items: [
-      { primary: "YES", secondary: "是", tone: "yes" },
-      { primary: "NO",  secondary: "否", tone: "no" }
-    ]
-  },
-  {
-    id: "compass", icon: "🧭", label: "往哪走", size: "xl",
-    hint: "不知道往哪走？點一下球",
-    initial: { primary: "?", secondary: "點一下球" },
-    items: [
-      { primary: "⬆️", secondary: "前", tone: "" },
-      { primary: "↗️", secondary: "右前", tone: "" },
-      { primary: "➡️", secondary: "右", tone: "" },
-      { primary: "↘️", secondary: "右後", tone: "" },
-      { primary: "⬇️", secondary: "後", tone: "" },
-      { primary: "↙️", secondary: "左後", tone: "" },
-      { primary: "⬅️", secondary: "左", tone: "" },
-      { primary: "↖️", secondary: "左前", tone: "" }
     ]
   }
 ];
