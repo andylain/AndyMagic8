@@ -280,7 +280,10 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
   position: absolute;
   top: 46px;
   left: 0;
-  min-width: 180px;
+  /* 寬度跟著最長的項目走，不寫死；上限保證窄螢幕也不會超出畫面 */
+  min-width: 230px;
+  max-width: calc(100vw - 32px);
+  width: max-content;
   max-height: min(72vh, 560px);
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -298,6 +301,7 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
   align-items: center;
   gap: 9px;
   width: 100%;
+  white-space: nowrap;
   padding: 9px 10px;
   border: 0;
   border-radius: 9px;
