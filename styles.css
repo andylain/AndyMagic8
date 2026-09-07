@@ -381,6 +381,7 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
   stroke-linejoin: round;
 }
 .tool-btn .icon .solid { fill: currentColor; }
+.tool-btn .icon .dot { fill: currentColor; stroke: none; }
 /* 開＝畫聲波／震動線，關＝畫叉叉／斜線 */
 .tool-btn[aria-pressed="true"] .off,
 .tool-btn[aria-pressed="false"] .on { display: none; }
