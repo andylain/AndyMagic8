@@ -23,8 +23,70 @@
     color: #e8eaf2;
     font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
     padding: 24px;
+    overflow-x: hidden;
   }
   h1 { font-size: 1.4rem; font-weight: 600; margin: 0; letter-spacing: .05em; }
+
+  /* 煙霧繚繞：幾團柔邊漸層緩慢飄移，不用任何圖檔 */
+  .smoke {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  /* 拉長的橢圓霧帶，各自用不同角度與速度飄，交疊出繚繞感 */
+  .smoke span {
+    position: absolute;
+    border-radius: 50%;
+    will-change: transform;
+  }
+  .smoke span:nth-child(1) {
+    width: 90vmax; height: 38vmax; top: 2%; left: -25vmax;
+    background: radial-gradient(closest-side, rgba(124,140,255,.20), rgba(124,140,255,.06) 55%, transparent 78%);
+    animation: wisp-a 38s ease-in-out infinite alternate;
+  }
+  .smoke span:nth-child(2) {
+    width: 75vmax; height: 30vmax; top: 34%; right: -22vmax;
+    background: radial-gradient(closest-side, rgba(178,116,230,.19), rgba(178,116,230,.05) 55%, transparent 78%);
+    animation: wisp-b 29s ease-in-out infinite alternate;
+    animation-delay: -9s;
+  }
+  .smoke span:nth-child(3) {
+    width: 82vmax; height: 34vmax; bottom: 4%; left: -20vmax;
+    background: radial-gradient(closest-side, rgba(86,196,206,.15), rgba(86,196,206,.04) 55%, transparent 78%);
+    animation: wisp-a 45s ease-in-out infinite alternate;
+    animation-delay: -21s;
+  }
+  .smoke span:nth-child(4) {
+    width: 62vmax; height: 26vmax; top: 60%; right: -14vmax;
+    background: radial-gradient(closest-side, rgba(140,160,255,.16), rgba(140,160,255,.04) 55%, transparent 78%);
+    animation: wisp-b 33s ease-in-out infinite alternate;
+    animation-delay: -15s;
+  }
+  .smoke span:nth-child(5) {
+    width: 70vmax; height: 24vmax; top: 16%; right: -18vmax;
+    background: radial-gradient(closest-side, rgba(196,150,255,.13), rgba(196,150,255,.03) 55%, transparent 78%);
+    animation: wisp-a 26s ease-in-out infinite alternate;
+    animation-delay: -6s;
+  }
+  .smoke span:nth-child(6) {
+    width: 58vmax; height: 22vmax; bottom: 26%; left: -10vmax;
+    background: radial-gradient(closest-side, rgba(120,190,240,.12), rgba(120,190,240,.03) 55%, transparent 78%);
+    animation: wisp-b 41s ease-in-out infinite alternate;
+    animation-delay: -27s;
+  }
+  @keyframes wisp-a {
+    from { transform: translate3d(-6%, 4%, 0) rotate(-12deg) scale(1); }
+    to   { transform: translate3d(14%, -8%, 0) rotate(10deg) scale(1.3); }
+  }
+  @keyframes wisp-b {
+    from { transform: translate3d(8%, -5%, 0) rotate(14deg) scale(1.2); }
+    to   { transform: translate3d(-12%, 7%, 0) rotate(-8deg) scale(.9); }
+  }
+
+  /* 內容都疊在煙霧之上 */
+  h1, .ball, .hint, .footer, .sound-toggle { position: relative; z-index: 1; }
 
   .ball {
     width: min(78vw, 320px);
@@ -90,13 +152,51 @@
   .answer.no { color: var(--no); }
   .answer.maybe { color: var(--maybe); }
 
-  .hint { font-size: .85rem; opacity: .6; margin: 0; }
+  .hint {
+    font-size: clamp(1rem, 3.8vw, 1.15rem);
+    opacity: .72;
+    margin: 0;
+    letter-spacing: .04em;
+  }
+
   .footer { font-size: .75rem; opacity: .45; margin-top: 8px; letter-spacing: .03em; }
   .footer a { color: inherit; text-decoration: none; border-bottom: 1px solid currentColor; }
   .footer a:hover { opacity: .85; }
+
+  .sound-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.06);
+    color: inherit;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: .55;
+    transition: opacity .2s, background .2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sound-toggle:hover { opacity: 1; background: rgba(255,255,255,.12); }
+  .sound-toggle[aria-pressed="true"] { opacity: .9; }
+
+  /* 尊重系統的「減少動態效果」設定 */
+  @media (prefers-reduced-motion: reduce) {
+    .smoke span { animation: none; }
+    .ball.shake { animation: none; }
+  }
 </style>
 </head>
 <body>
+  <div class="smoke" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <button class="sound-toggle" id="soundToggle" aria-pressed="false" aria-label="開啟音效" title="音效">🔇</button>
+
   <h1>🎱 神奇八號球</h1>
 
   <div class="ball" id="ball" role="button" tabindex="0" aria-label="搖動神奇八號球">
@@ -110,6 +210,7 @@
   </div>
 
   <p class="hint">心中默想問題，然後點一下球</p>
+
   <footer class="footer">
     Powered by <a href="https://andylain.com" target="_blank" rel="noopener">Andylain.com</a>
   </footer>
@@ -141,6 +242,91 @@
     { en: "Very doubtful",        zh: "很可疑",               type: "no" }
   ];
 
+  /* ---------- 音效：Web Audio 即時合成，不載入任何音檔 ---------- */
+
+  const STORAGE_KEY = "magic8-sound";
+  let soundOn = false;
+  try { soundOn = localStorage.getItem(STORAGE_KEY) === "on"; } catch (e) {}
+
+  let audioCtx = null;
+  function getCtx() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    if (!audioCtx) audioCtx = new AC();
+    // iOS/Chrome 的自動播放政策：必須在使用者手勢裡 resume
+    if (audioCtx.state === "suspended") audioCtx.resume();
+    return audioCtx;
+  }
+
+  function noiseBuffer(ctx, seconds) {
+    const len = Math.floor(ctx.sampleRate * seconds);
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+    return buf;
+  }
+
+  function playShake() {
+    if (!soundOn) return;
+    const ctx = getCtx();
+    if (!ctx) return;
+    const t = ctx.currentTime;
+
+    // 液體晃動：白噪音穿過頻率掃動的帶通濾波器
+    const src = ctx.createBufferSource();
+    src.buffer = noiseBuffer(ctx, 0.7);
+
+    const bp = ctx.createBiquadFilter();
+    bp.type = "bandpass";
+    bp.Q.value = 0.9;
+    bp.frequency.setValueAtTime(700, t);
+    bp.frequency.exponentialRampToValueAtTime(2400, t + 0.25);
+    bp.frequency.exponentialRampToValueAtTime(900, t + 0.55);
+
+    // 三下起伏，對齊 @keyframes shake 的節奏
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    [0, 0.18, 0.36].forEach((d, i) => {
+      g.gain.linearRampToValueAtTime(0.22 - i * 0.05, t + d + 0.06);
+      g.gain.linearRampToValueAtTime(0.015, t + d + 0.16);
+    });
+    g.gain.linearRampToValueAtTime(0.0001, t + 0.62);
+
+    src.connect(bp).connect(g).connect(ctx.destination);
+    src.start(t);
+    src.stop(t + 0.7);
+
+    // 答案浮現時的「咚」
+    const osc = ctx.createOscillator();
+    const og = ctx.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(150, t + 0.55);
+    osc.frequency.exponentialRampToValueAtTime(62, t + 0.82);
+    og.gain.setValueAtTime(0.0001, t + 0.55);
+    og.gain.linearRampToValueAtTime(0.16, t + 0.60);
+    og.gain.exponentialRampToValueAtTime(0.0001, t + 0.92);
+    osc.connect(og).connect(ctx.destination);
+    osc.start(t + 0.55);
+    osc.stop(t + 0.95);
+  }
+
+  const soundBtn = document.getElementById("soundToggle");
+  function renderSoundBtn() {
+    soundBtn.textContent = soundOn ? "🔊" : "🔇";
+    soundBtn.setAttribute("aria-pressed", String(soundOn));
+    soundBtn.setAttribute("aria-label", soundOn ? "關閉音效" : "開啟音效");
+  }
+  renderSoundBtn();
+
+  soundBtn.addEventListener("click", () => {
+    soundOn = !soundOn;
+    try { localStorage.setItem(STORAGE_KEY, soundOn ? "on" : "off"); } catch (e) {}
+    renderSoundBtn();
+    if (soundOn) getCtx();   // 趁這個手勢把 AudioContext 解鎖
+  });
+
+  /* ---------- 搖球 ---------- */
+
   const ball = document.getElementById("ball");
   const answer = document.getElementById("answer");
   let rolling = false;
@@ -153,6 +339,7 @@
     void ball.offsetWidth;      // 重播動畫
     ball.classList.add("shake");
     answer.classList.add("fade");
+    playShake();
 
     setTimeout(() => {
       const a = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
