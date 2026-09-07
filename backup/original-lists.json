@@ -1,0 +1,645 @@
+{
+  "note": "擴充前的原始清單快照。完整歷史仍在 git 裡，這份只是方便查閱。",
+  "takenAt": "2026-09-07",
+  "lists": [
+    {
+      "id": "food",
+      "label": "今天吃什麼",
+      "count": 100,
+      "items": [
+        {
+          "primary": "滷肉飯",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "鹹酥雞",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "蚵仔煎",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "肉圓",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "臭豆腐",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "大腸包小腸",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "胡椒餅",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "蔥抓餅",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "車輪餅",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "刈包",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "碗粿",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "肉羹",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "四神湯",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "鹽水雞",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "地瓜球",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "蚵仔麵線",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "水煎包",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "筒仔米糕",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "豬血糕",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "甜不辣",
+          "secondary": "小吃",
+          "tone": "snack"
+        },
+        {
+          "primary": "牛肉麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "麻醬麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "乾麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "意麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "炸醬麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "陽春麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "榨菜肉絲麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "酸辣麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "擔仔麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "鍋燒意麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "粄條",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "米粉湯",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "烏龍麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "刀削麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "大滷麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "羊肉麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "鴨肉麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "餛飩麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "什錦麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "麻辣麵",
+          "secondary": "麵食",
+          "tone": "noodle"
+        },
+        {
+          "primary": "火雞肉飯",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "排骨飯",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "咖哩飯",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "蛋炒飯",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "燒肉丼",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "爌肉飯",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "雞腿便當",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "鰻魚飯",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "親子丼",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "牛丼",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "海南雞飯",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "油飯",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "廣東粥",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "燴飯",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "鐵板飯",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "豬腳飯",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "香腸飯",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "蝦仁飯",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "豬排飯",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "三寶飯",
+          "secondary": "飯類",
+          "tone": "rice"
+        },
+        {
+          "primary": "日式拉麵",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "壽司",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "韓式拌飯",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "打拋豬",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "義大利麵",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "披薩",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "漢堡",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "越南河粉",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "泰式綠咖哩",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "印度咖哩",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "墨西哥捲餅",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "日式咖哩",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "天婦羅",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "部隊鍋",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "韓式炸雞",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "燒肉",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "涮涮鍋",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "西班牙海鮮飯",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "法式吐司",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "土耳其烤肉",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "沙威瑪",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "希臘沙拉",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "美式早午餐",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "生魚片丼",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "泡菜鍋",
+          "secondary": "異國",
+          "tone": "intl"
+        },
+        {
+          "primary": "水餃",
+          "secondary": "清爽",
+          "tone": "light"
+        },
+        {
+          "primary": "關東煮",
+          "secondary": "清爽",
+          "tone": "light"
+        },
+        {
+          "primary": "生菜沙拉",
+          "secondary": "清爽",
+          "tone": "light"
+        },
+        {
+          "primary": "涼麵",
+          "secondary": "清爽",
+          "tone": "light"
+        },
+        {
+          "primary": "清粥小菜",
+          "secondary": "清爽",
+          "tone": "light"
+        },
+        {
+          "primary": "蒸餃",
+          "secondary": "清爽",
+          "tone": "light"
+        },
+        {
+          "primary": "鍋貼",
+          "secondary": "清爽",
+          "tone": "light"
+        },
+        {
+          "primary": "燙青菜",
+          "secondary": "清爽",
+          "tone": "light"
+        },
+        {
+          "primary": "味噌定食",
+          "secondary": "清爽",
+          "tone": "light"
+        },
+        {
+          "primary": "豆腐煲",
+          "secondary": "清爽",
+          "tone": "light"
+        },
+        {
+          "primary": "蔬食自助餐",
+          "secondary": "清爽",
+          "tone": "light"
+        },
+        {
+          "primary": "素食便當",
+          "secondary": "清爽",
+          "tone": "light"
+        },
+        {
+          "primary": "鮮蔬湯麵",
+          "secondary": "清爽",
+          "tone": "light"
+        },
+        {
+          "primary": "雞肉沙拉",
+          "secondary": "清爽",
+          "tone": "light"
+        },
+        {
+          "primary": "蛤蜊湯麵",
+          "secondary": "清爽",
+          "tone": "light"
+        }
+      ]
+    },
+    {
+      "id": "fortune",
+      "label": "今日運勢",
+      "count": 25,
+      "items": [
+        {
+          "primary": "大吉",
+          "secondary": "諸事順遂，放手去做",
+          "tone": "yes"
+        },
+        {
+          "primary": "大吉",
+          "secondary": "貴人在側，開口就對",
+          "tone": "yes"
+        },
+        {
+          "primary": "大吉",
+          "secondary": "水到渠成，時機正好",
+          "tone": "yes"
+        },
+        {
+          "primary": "大吉",
+          "secondary": "久候之事，今日有音",
+          "tone": "yes"
+        },
+        {
+          "primary": "中吉",
+          "secondary": "穩步前行，不必著急",
+          "tone": "tea"
+        },
+        {
+          "primary": "中吉",
+          "secondary": "小有斬獲，值得一試",
+          "tone": "tea"
+        },
+        {
+          "primary": "中吉",
+          "secondary": "先做再說，邊走邊修",
+          "tone": "tea"
+        },
+        {
+          "primary": "中吉",
+          "secondary": "舊識帶來新機會",
+          "tone": "tea"
+        },
+        {
+          "primary": "中吉",
+          "secondary": "財務平穩，可小額投入",
+          "tone": "tea"
+        },
+        {
+          "primary": "中吉",
+          "secondary": "健康無虞，記得休息",
+          "tone": "tea"
+        },
+        {
+          "primary": "小吉",
+          "secondary": "事緩則圓，別搶快",
+          "tone": "maybe"
+        },
+        {
+          "primary": "小吉",
+          "secondary": "付出多於回收，但值得",
+          "tone": "maybe"
+        },
+        {
+          "primary": "小吉",
+          "secondary": "有波折，結果尚可",
+          "tone": "maybe"
+        },
+        {
+          "primary": "小吉",
+          "secondary": "宜守不宜攻",
+          "tone": "maybe"
+        },
+        {
+          "primary": "小吉",
+          "secondary": "先問清楚再答應",
+          "tone": "maybe"
+        },
+        {
+          "primary": "小吉",
+          "secondary": "小心口舌，多聽少說",
+          "tone": "maybe"
+        },
+        {
+          "primary": "末吉",
+          "secondary": "時機未到，再等等",
+          "tone": "fried"
+        },
+        {
+          "primary": "末吉",
+          "secondary": "計畫需重擬",
+          "tone": "fried"
+        },
+        {
+          "primary": "末吉",
+          "secondary": "破財消災，別太在意",
+          "tone": "fried"
+        },
+        {
+          "primary": "末吉",
+          "secondary": "今日宜獨處",
+          "tone": "fried"
+        },
+        {
+          "primary": "末吉",
+          "secondary": "別勉強，明天再說",
+          "tone": "fried"
+        },
+        {
+          "primary": "凶",
+          "secondary": "三思而後行",
+          "tone": "no"
+        },
+        {
+          "primary": "凶",
+          "secondary": "今日不宜做重大決定",
+          "tone": "no"
+        },
+        {
+          "primary": "凶",
+          "secondary": "慎防輕信他人",
+          "tone": "no"
+        },
+        {
+          "primary": "凶",
+          "secondary": "退一步，海闊天空",
+          "tone": "no"
+        }
+      ]
+    }
+  ]
+}

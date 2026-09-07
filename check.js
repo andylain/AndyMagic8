@@ -206,10 +206,6 @@ else {
   if (w !== dw || h !== dh) fail(`og.png 實際是 ${w}x${h}，但宣告為 ${dw}x${dh}`);
   if (w < 600 || h < 315) fail(`og.png ${w}x${h} 小於 Facebook 的最低要求 600x315`);
   if (buf.length > 8 * 1024 * 1024) fail("og.png 超過 Facebook 的 8MB 上限");
-  // 模式清單改了但圖沒重產 —— 圖上的模式數量會過期
-  if (fs.statSync(path.join(ROOT, "modes.js")).mtimeMs > fs.statSync(ogFile).mtimeMs) {
-    warn("modes.js 比 og.png 新，模式數量可能已過期 —— 跑 node make-og.js 重新產圖");
-  }
 }
 
 const ld = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
