@@ -8,8 +8,9 @@
 /* ---------- 音效：Web Audio 即時合成，不載入任何音檔 ---------- */
 
 const SOUND_KEY = "magic8-sound";
-let soundOn = false;
-try { soundOn = localStorage.getItem(SOUND_KEY) === "on"; } catch (e) {}
+// 預設開啟；只有使用者自己關過才記住關閉
+let soundOn = true;
+try { if (localStorage.getItem(SOUND_KEY) === "off") soundOn = false; } catch (e) {}
 
 let audioCtx = null;
 function getCtx() {
