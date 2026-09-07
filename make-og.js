@@ -5,49 +5,42 @@
  *   node make-og.js
  *
  * 圖片是用 App 真正的 styles.css 渲染出來的，所以背景與球體永遠跟本體一致。
- * 模式數量從 modes.js 讀取，不寫死 —— 新增模式後重跑這支就會更新。
- * check.js 會在 modes.js 比 og.png 新的時候提醒你。 */
+ * 標題字型是 og-font.woff2 —— Noto Sans TC（SIL Open Font License）只含這張圖用到的
+ * 38 個字的子集，12KB。自己帶著走，所以出圖不需要連網、每次結果都一樣。
+ * 字型沒載到會直接中止，不會默默用替代字型出圖。 */
 
-const http = require("http"), fs = require("fs"), path = require("path"), vm = require("vm");
+const http = require("http"), fs = require("fs"), path = require("path");
 const ROOT = __dirname;
 
-const sandbox = {};
-vm.createContext(sandbox);
-vm.runInContext(fs.readFileSync(path.join(ROOT, "modes.js"), "utf8") +
-                "\n;globalThis.__e = { MODES };", sandbox);
-const MODE_COUNT = sandbox.__e.MODES.length;
-
+const FONT = '"Noto Sans TC", sans-serif';
 const PAGE = `<meta charset="utf-8">
 <link rel="stylesheet" href="/styles.css">
 <style>
+  @font-face {
+    font-family: "Noto Sans TC";
+    src: url("/og-font.woff2") format("woff2");
+    font-weight: 100 900;
+    font-display: block;
+  }
   html,body{width:1200px;height:630px;overflow:hidden;margin:0}
   body{display:block;padding:0;gap:0}
   .smoke span{animation-play-state:paused!important}
-  .stage{position:relative;z-index:1;width:1200px;height:630px}
-  .ball{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:352px!important;margin:0}
-  .answer{font-size:19px!important}
-  .brand{position:absolute;top:44px;left:0;right:0;text-align:center}
-  .brand h1{font-size:46px;margin:0;letter-spacing:.06em;text-shadow:0 2px 12px rgba(0,0,0,.7)}
-  .brand p{margin:12px 0 0;font-size:21px;opacity:.9;letter-spacing:.04em;text-shadow:0 2px 10px rgba(0,0,0,.75)}
-  .card{position:absolute;padding:13px 20px;border-radius:16px;background:rgba(16,20,36,.72);
-        border:1px solid rgba(255,255,255,.13);box-shadow:0 10px 28px rgba(0,0,0,.45);
-        font-size:22px;font-weight:700;line-height:1.25;white-space:nowrap}
-  .card small{display:block;font-size:14px;font-weight:400;opacity:.62;margin-top:3px;color:#e8eaf2}
-  .foot{position:absolute;bottom:30px;left:0;right:0;text-align:center;font-size:16px;
-        opacity:.72;letter-spacing:.05em;text-shadow:0 2px 8px rgba(0,0,0,.7)}
+  .stage{position:relative;z-index:1;width:1200px;height:630px;font-family:${FONT};
+         display:flex;align-items:center;justify-content:center;gap:76px;padding:0 70px}
+  .ball{width:372px!important;flex:none;margin:0}
+  .answer{font-size:20px!important}
+  .txt{max-width:430px}
+  h1{margin:0;font-family:${FONT};font-weight:700;font-size:62px;letter-spacing:.06em;
+     line-height:1.15;text-shadow:0 3px 16px rgba(0,0,0,.75)}
+  p{margin:22px 0 0;font-family:${FONT};font-weight:400;font-size:25px;opacity:.84;
+    letter-spacing:.05em;text-shadow:0 2px 12px rgba(0,0,0,.8)}
 </style>
 <div class="smoke"><span></span><span></span><span></span><span></span><span></span><span></span></div>
 <div class="stage">
-  <div class="brand">
-    <h1>🎱 神奇八號球</h1>
+  <div class="txt">
+    <h1>神奇八號球</h1>
     <p>猶豫不決的時候，就交給命運吧</p>
   </div>
-  <div class="card" style="left:64px;  top:186px; color:#fbbf24">滷肉飯<small>今天吃什麼 · 小吃</small></div>
-  <div class="card" style="left:38px;  top:330px; color:#86efac">珍珠奶茶<small>喝什麼飲料 · 茶飲</small></div>
-  <div class="card" style="left:104px; top:466px; color:#fca5a5">東京成田<small>去哪裡玩 · NRT 日本</small></div>
-  <div class="card" style="right:70px; top:186px; color:#4ade80">大吉<small>今日運勢 · 諸事順遂</small></div>
-  <div class="card" style="right:40px; top:330px; color:#f0abfc">學一種動物叫<small>抽個懲罰 · 表演</small></div>
-  <div class="card" style="right:96px; top:466px; color:#fcd34d">$350<small>這餐預算 · 加權隨機</small></div>
   <div class="ball">
     <div class="window">
       <div class="tri-clip"><div class="triangle"></div></div>
@@ -58,11 +51,11 @@ const PAGE = `<meta charset="utf-8">
       <div class="glass"></div>
     </div>
   </div>
-  <div class="foot">${MODE_COUNT} 種抽籤模式 · 免安裝 · 可離線 &nbsp;|&nbsp; by 安迪連</div>
 </div>`;
 
 const MIME = { ".html":"text/html; charset=utf-8", ".css":"text/css; charset=utf-8",
-               ".js":"text/javascript; charset=utf-8", ".png":"image/png" };
+               ".js":"text/javascript; charset=utf-8", ".png":"image/png",
+               ".woff2":"font/woff2" };
 const server = http.createServer((q, r) => {
   const f = decodeURIComponent(q.url.split("?")[0]);
   if (f === "/og-source.html") { r.writeHead(200, {"Content-Type":"text/html; charset=utf-8"}); return r.end(PAGE); }
@@ -85,9 +78,29 @@ server.listen(0, "127.0.0.1", async () => {
   await p.evaluate(() => document.querySelectorAll(".smoke span")
     .forEach((s, i) => { s.style.animationDelay = `-${[6, 3, 11, 5, 8, 2][i]}s`; }));
   await p.waitForTimeout(400);
+
+  // 字型沒載到就直接中止 —— 默默用替代字型出圖比失敗更糟。
+  // 注意：不能用文字寬度來判斷字型有沒有生效，中文在任何字型裡都是全形等寬，
+  // 量起來都一樣。改看 FontFace 的實際載入狀態。
+  const font = await p.evaluate(async () => {
+    await document.fonts.ready;
+    const face = [...document.fonts].find(f => f.family === "Noto Sans TC");
+    return {
+      status: face ? face.status : "找不到 @font-face",
+      weights: face ? face.weight : null,
+      usable: document.fonts.check('700 62px "Noto Sans TC"'),
+    };
+  });
+  if (font.status !== "loaded" || !font.usable) {
+    console.error(`Noto Sans TC 沒有載入（狀態 ${font.status}），中止出圖以免用到替代字型`);
+    await b.close(); server.close();
+    process.exit(1);
+  }
+  console.log(`Noto Sans TC 已載入（字重範圍 ${font.weights}）`);
+
   await p.screenshot({ path: path.join(ROOT, "og.png") });
   await b.close();
   server.close();
   const kb = (fs.statSync(path.join(ROOT, "og.png")).size / 1024).toFixed(0);
-  console.log(`og.png 已產生 1200x630、${kb} KB、標示 ${MODE_COUNT} 種模式`);
+  console.log(`og.png 已產生 1200x630、${kb} KB`);
 });

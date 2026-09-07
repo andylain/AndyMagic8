@@ -84,8 +84,12 @@ App 每次開啟都回到八號球，不會記住上次用的模式。
 **部署後記得去 [Facebook 分享偵錯工具](https://developers.facebook.com/tools/debug/)**
 貼上網址按「Scrape Again」，否則 Facebook 會一直顯示舊的快取。
 
-分享描述刻意不寫模式數量，這樣新增模式時不用改文案。圖片上的數量則是
-`make-og.js` 從 `modes.js` 讀出來的，重跑就會更新。
+分享描述與封面都刻意不寫模式數量，這樣新增模式時完全不用動它們。
+
+封面的標題字型是 `og-font.woff2` —— Noto Sans TC 的子集，只含這張圖用到的 38 個字，12KB，
+授權為 SIL Open Font License。字型自己帶著走，所以出圖不需要連網、每次結果都一樣；
+`make-og.js` 在字型沒載到時會直接中止，不會默默用替代字型出圖。
+**這只影響封面圖，網站本身仍使用系統字型堆疊，不載任何外部字型。**
 
 ## 開發
 
@@ -112,6 +116,7 @@ check.js      資料驗證（零相依）
 bump.js       版本號同步工具
 make-og.js    產生 og.png 的工具
 og.png        社群分享預覽圖 1200x630
+og-font.woff2 產生 og.png 用的 Noto Sans TC 子集（OFL 授權）
 manifest.json PWA 設定
 *.png         各平台圖示
 ```
