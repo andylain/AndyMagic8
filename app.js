@@ -14,7 +14,7 @@
  * 只記錄「用了哪個模式、幾次、從哪裡觸發」，不送出任何抽到的答案內容。 */
 
 const GA_PLACEHOLDER = "G-XXXXXXXXXX";
-const GA_ID = GA_PLACEHOLDER;
+const GA_ID = "G-75HKL04J5N";
 
 let track = () => {};                       // 沒設定 ID 就是個空函式
 // 注意 placeholder 本身也符合 G-[A-Z0-9]+ 的格式，要另外排除

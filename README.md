@@ -99,15 +99,8 @@ App 每次開啟都回到八號球，不會記住上次用的模式。
 
 ## 使用量統計（GA4）
 
-預設**關閉** —— `app.js` 的 `GA_ID` 維持預設值時完全不載入 Google Analytics，
-也不會有任何外部請求，App 仍是零外部相依、可離線。
-
-**啟用步驟：**
-
-1. 到 [Google Analytics](https://analytics.google.com/) 建立資源，名稱用 `AndyMagic8`
-2. 建立「網站」資料串流，網址填 `https://andylain.github.io/AndyMagic8/`
-3. 複製評估 ID（`G-` 開頭），貼進 `app.js` 最上方的 `GA_ID`
-4. `node bump.js && node check.js`，然後推上去
+已啟用，資源 `AndyMagic8`，評估 ID 在 `app.js` 最上方的 `GA_ID`。
+把它改回 `GA_PLACEHOLDER` 就會完全停用，連 gtag.js 都不會載入。
 
 **送出的事件：**
 
