@@ -77,7 +77,7 @@ h1 { font-size: 1.4rem; font-weight: 600; margin: 0; letter-spacing: .05em; }
 h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
 
 .ball {
-  width: min(78vw, 320px);
+  width: min(84vw, 344px);
   aspect-ratio: 1;
   border-radius: 50%;
   background: radial-gradient(circle at 32% 28%, #5a5a5a, #141414 55%, #000 100%);
@@ -102,7 +102,7 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
 /* 藍色三角視窗：三角形只當背景層，文字疊在上面才不會被 clip-path 切掉 */
 .window {
   position: relative;
-  width: 60%;
+  width: 68%;
   aspect-ratio: 1;
   border-radius: 50%;
   background: #0d1b3e;
@@ -123,12 +123,30 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
   clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
   background: rgba(90, 130, 235, .02);
 }
+/* 蓋在文字上的玻璃罩。三層：頂緣高光弧、左上斜向反光、內緣厚度陰影。
+ * 不能用 backdrop-filter — 那會把下面的文字一起糊掉。
+ * 反光刻意偏左上，避開正中央的文字。 */
+.glass {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 50%;
+  pointer-events: none;
+  background:
+    radial-gradient(58% 40% at 31% 21%,
+      rgba(255,255,255,.17), rgba(255,255,255,.055) 55%, transparent 76%);
+  box-shadow:
+    inset 0 1.5px 1px rgba(255,255,255,.34),    /* 頂緣捕捉到的那道光 */
+    inset 0 -3px 6px rgba(255,255,255,.06),     /* 下緣的微弱回光 */
+    inset 0 0 18px rgba(0,0,0,.38);             /* 玻璃厚度 */
+}
+
 .answer {
   position: relative;   /* 疊在三角形之上 */
   z-index: 1;
   width: 84%;
   text-align: center;
-  font-size: clamp(.72rem, 3.6vw, 1rem);
+  font-size: clamp(.86rem, 4.2vw, 1.15rem);
   line-height: 1.28;
   text-shadow: 0 1px 3px rgba(0,0,0,.55);
   transition: opacity .25s;
