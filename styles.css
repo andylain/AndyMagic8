@@ -118,6 +118,37 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
   -webkit-tap-highlight-color: transparent;
 }
 .ball:active { transform: scale(.97); }
+
+/* 入場：球從畫面上方落下、觸地擠壓、彈一下後落定。
+ * 只動 transform 與 opacity，不碰 layout，所以不會造成版面位移。
+ * 球殼與高光固定不動 —— 轉的是裡面的視窗，就像真的八號球裡骰子在液體中翻滾。
+ * 整顆球一起轉的話高光會跟著跑，看起來會變成「光源繞著球轉」。 */
+.ball.intro { animation: ball-drop 1.3s both; will-change: transform; }
+.ball.intro .tri-clip { animation: die-tumble 1.15s cubic-bezier(.2,.7,.3,1) both; }
+.ball.intro .answer { animation: answer-in .38s ease-out 1.02s backwards; }
+
+@keyframes ball-drop {
+  0%   { transform: translate3d(0,-118vh,0) scale(.8);
+         animation-timing-function: cubic-bezier(.5,.02,.72,.16); }   /* 加速墜落 */
+  40%  { transform: translate3d(0,0,0) scale(1.04,.96);
+         animation-timing-function: ease-out; }
+  48%  { transform: translate3d(0,0,0) scale(1.13,.85);
+         animation-timing-function: ease-out; }                       /* 觸地壓扁 */
+  60%  { transform: translate3d(0,-11%,0) scale(.95,1.06);
+         animation-timing-function: ease-in; }                        /* 彈起 */
+  74%  { transform: translate3d(0,0,0) scale(1.07,.93);
+         animation-timing-function: ease-out; }                       /* 二次觸地 */
+  86%  { transform: translate3d(0,-3%,0) scale(.98,1.03); }
+  100% { transform: translate3d(0,0,0) scale(1); }
+}
+@keyframes die-tumble {
+  0%   { transform: rotate(-26deg); }
+  100% { transform: rotate(374deg); }
+}
+@keyframes answer-in {
+  from { opacity: 0; transform: scale(.88); }
+  to   { opacity: 1; transform: none; }
+}
 .ball.shake { animation: shake .6s ease; }
 @keyframes shake {
   0%,100% { transform: translate(0,0) rotate(0); }
@@ -324,6 +355,9 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) {
   .smoke span { animation: none; }
   .ball.shake { animation: none; }
+  .ball.intro,
+  .ball.intro .tri-clip,
+  .ball.intro .answer { animation: none; }
 }
 
 /* ---------- 這個模式的總表 ---------- */

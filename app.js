@@ -410,6 +410,7 @@ function shake() {
   if (rolling) return;
   rolling = true;
 
+  ball.classList.remove("intro");   // 動畫還在跑就點球 → 直接跳過，別讓人等
   ball.classList.remove("shake");
   void ball.offsetWidth;      // 重播動畫
   ball.classList.add("shake");
@@ -494,6 +495,18 @@ ball.addEventListener("keydown", e => {
 
 applyMode(mode);
 applyMotion();
+
+/* ---------- 入場動畫 ---------- */
+// reduceMotion 在上面搖一搖那段已經算好了
+if (!reduceMotion) {
+  ball.classList.add("intro");
+  const endIntro = () => ball.classList.remove("intro");
+  ball.addEventListener("animationend", e => {
+    if (e.animationName === "ball-drop") endIntro();
+  });
+  // 動畫事件沒送達時的保險（例如分頁在背景載入）
+  setTimeout(endIntro, 2600);
+}
 
 /* ---------- 離線支援 ---------- */
 if ("serviceWorker" in navigator) {
