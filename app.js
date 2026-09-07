@@ -110,6 +110,8 @@ function showItem(item) {
   // 直接帶色碼的項目（選一個顏色）多顯示一塊色票，深色系才看得見
   swatch.hidden = !item.color;
   if (item.color) swatch.style.background = item.color;
+  // 特別長的項目（例如「BLT安格斯黑牛堡」）自動降一級字，免得貼到視窗邊緣
+  answer.dataset.long = String([...item.primary].length > 7);
   answer.querySelector(".primary").textContent = item.primary;
   answer.querySelector(".secondary").textContent = item.secondary;
 }

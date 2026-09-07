@@ -147,6 +147,7 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
 .answer.fade { opacity: 0; }
 /* 菜名短，放大才撐得起版面 */
 .answer[data-size="md"] .primary { font-size: 1.6em; letter-spacing: .06em; }
+.answer[data-size="md"][data-long="true"] .primary { font-size: 1.22em; letter-spacing: .02em; }
 .answer[data-size="lg"] .primary { font-size: 2.6em; letter-spacing: .08em; }
 .answer[data-size="xl"] .primary { font-size: 3.4em; line-height: 1; }
 .answer[data-size] .secondary { font-size: .78em; margin-top: 8px; }
