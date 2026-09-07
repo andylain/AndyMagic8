@@ -7,7 +7,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 24px;
-  background: radial-gradient(circle at 50% 20%, #2b3556, #0b0e18 70%);
+  background: #080b14;
   color: #e8eaf2;
   font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
   padding: 24px;
@@ -22,55 +22,83 @@ h1 { font-size: 1.4rem; font-weight: 600; margin: 0; letter-spacing: .05em; }
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
+  /* 底色放這裡，色團才能用 screen 跟它混色 */
+  background: radial-gradient(circle at 50% 18%, #2f3a63, #0a0e1c 72%);
 }
-/* 拉長的橢圓霧帶，各自用不同角度與速度飄，交疊出繚繞感 */
+/* 下緣的暗場。光團在中上方盡情發亮，但提示文字與 footer 所在的下方
+ * 需要壓暗才有足夠對比 —— 量過，不壓的話對比度會掉到 2.5 左右。 */
+.smoke::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom,
+    transparent 40%, rgba(8,11,20,.35) 72%, rgba(8,11,20,.72) 100%);
+}
+
+/* 流動的光團。screen 讓重疊處相加變亮，像 Siri 那種光在流動的感覺，
+ * 而不是一層層蓋上去。刻意不用 filter: blur() —— 大面積模糊在手機上很貴，
+ * 漸層本身的柔邊就夠了。 */
 .smoke span {
   position: absolute;
   border-radius: 50%;
+  mix-blend-mode: screen;
   will-change: transform;
 }
 .smoke span:nth-child(1) {
-  width: 90vmax; height: 38vmax; top: 2%; left: -25vmax;
-  background: radial-gradient(closest-side, rgba(124,140,255,.20), rgba(124,140,255,.06) 55%, transparent 78%);
-  animation: wisp-a 38s ease-in-out infinite alternate;
+  width: 88vmax; height: 40vmax; top: 0; left: -26vmax;
+  background: radial-gradient(closest-side, rgba(122,110,255,.46), rgba(122,110,255,.14) 52%, transparent 78%);
+  animation: wisp-a 17s ease-in-out infinite;
 }
 .smoke span:nth-child(2) {
-  width: 75vmax; height: 30vmax; top: 34%; right: -22vmax;
-  background: radial-gradient(closest-side, rgba(178,116,230,.19), rgba(178,116,230,.05) 55%, transparent 78%);
-  animation: wisp-b 29s ease-in-out infinite alternate;
-  animation-delay: -9s;
+  width: 74vmax; height: 32vmax; top: 30%; right: -24vmax;
+  background: radial-gradient(closest-side, rgba(214,88,232,.42), rgba(214,88,232,.12) 52%, transparent 78%);
+  animation: wisp-b 13s ease-in-out infinite;
+  animation-delay: -4s;
 }
 .smoke span:nth-child(3) {
-  width: 82vmax; height: 34vmax; bottom: 4%; left: -20vmax;
-  background: radial-gradient(closest-side, rgba(86,196,206,.15), rgba(86,196,206,.04) 55%, transparent 78%);
-  animation: wisp-a 45s ease-in-out infinite alternate;
-  animation-delay: -21s;
+  width: 80vmax; height: 36vmax; bottom: 2%; left: -22vmax;
+  background: radial-gradient(closest-side, rgba(46,214,220,.38), rgba(46,214,220,.11) 52%, transparent 78%);
+  animation: wisp-c 21s ease-in-out infinite;
+  animation-delay: -9s;
 }
 .smoke span:nth-child(4) {
-  width: 62vmax; height: 26vmax; top: 60%; right: -14vmax;
-  background: radial-gradient(closest-side, rgba(140,160,255,.16), rgba(140,160,255,.04) 55%, transparent 78%);
-  animation: wisp-b 33s ease-in-out infinite alternate;
-  animation-delay: -15s;
+  width: 60vmax; height: 28vmax; top: 58%; right: -16vmax;
+  background: radial-gradient(closest-side, rgba(70,130,255,.44), rgba(70,130,255,.13) 52%, transparent 78%);
+  animation: wisp-b 16s ease-in-out infinite;
+  animation-delay: -7s;
 }
 .smoke span:nth-child(5) {
-  width: 70vmax; height: 24vmax; top: 16%; right: -18vmax;
-  background: radial-gradient(closest-side, rgba(196,150,255,.13), rgba(196,150,255,.03) 55%, transparent 78%);
-  animation: wisp-a 26s ease-in-out infinite alternate;
-  animation-delay: -6s;
+  width: 68vmax; height: 26vmax; top: 12%; right: -20vmax;
+  background: radial-gradient(closest-side, rgba(255,110,196,.36), rgba(255,110,196,.10) 52%, transparent 78%);
+  animation: wisp-a 12s ease-in-out infinite;
+  animation-delay: -3s;
 }
 .smoke span:nth-child(6) {
-  width: 58vmax; height: 22vmax; bottom: 26%; left: -10vmax;
-  background: radial-gradient(closest-side, rgba(120,190,240,.12), rgba(120,190,240,.03) 55%, transparent 78%);
-  animation: wisp-b 41s ease-in-out infinite alternate;
-  animation-delay: -27s;
+  width: 56vmax; height: 24vmax; bottom: 22%; left: -12vmax;
+  background: radial-gradient(closest-side, rgba(90,200,255,.40), rgba(90,200,255,.12) 52%, transparent 78%);
+  animation: wisp-c 19s ease-in-out infinite;
+  animation-delay: -14s;
 }
+/* 首尾相接的循環，光團會四處遊走而不是在一條線上來回 */
 @keyframes wisp-a {
-  from { transform: translate3d(-6%, 4%, 0) rotate(-12deg) scale(1); }
-  to   { transform: translate3d(14%, -8%, 0) rotate(10deg) scale(1.3); }
+  0%   { transform: translate3d(-6%,  4%, 0) rotate(-12deg) scale(1); }
+  25%  { transform: translate3d(10%, -7%, 0) rotate(7deg)   scale(1.22); }
+  50%  { transform: translate3d(17%,  7%, 0) rotate(-5deg)  scale(1.04); }
+  75%  { transform: translate3d(-1%, -9%, 0) rotate(14deg)  scale(1.3); }
+  100% { transform: translate3d(-6%,  4%, 0) rotate(-12deg) scale(1); }
 }
 @keyframes wisp-b {
-  from { transform: translate3d(8%, -5%, 0) rotate(14deg) scale(1.2); }
-  to   { transform: translate3d(-12%, 7%, 0) rotate(-8deg) scale(.9); }
+  0%   { transform: translate3d(7%, -5%, 0) rotate(13deg)  scale(1.16); }
+  25%  { transform: translate3d(-9%, 6%, 0) rotate(-9deg)  scale(.92); }
+  50%  { transform: translate3d(-15%, -4%, 0) rotate(4deg) scale(1.24); }
+  75%  { transform: translate3d(3%, 10%, 0) rotate(-14deg) scale(1.02); }
+  100% { transform: translate3d(7%, -5%, 0) rotate(13deg)  scale(1.16); }
+}
+@keyframes wisp-c {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg) scale(1.1); }
+  33%  { transform: translate3d(12%, -8%, 0) rotate(11deg) scale(1.3); }
+  66%  { transform: translate3d(-11%, 5%, 0) rotate(-8deg) scale(.96); }
+  100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1.1); }
 }
 
 /* 內容都疊在煙霧之上 */
@@ -172,12 +200,13 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
 
 .hint {
   font-size: clamp(1rem, 3.8vw, 1.15rem);
-  opacity: .72;
+  opacity: .88;
+  text-shadow: 0 1px 5px rgba(0,0,0,.75);
   margin: 0;
   letter-spacing: .04em;
 }
 
-.footer { font-size: .75rem; opacity: .45; margin-top: 8px; letter-spacing: .03em; }
+.footer { font-size: .75rem; opacity: .62; text-shadow: 0 1px 4px rgba(0,0,0,.7); margin-top: 8px; letter-spacing: .03em; }
 .footer a { color: inherit; text-decoration: none; border-bottom: 1px solid currentColor; }
 .footer a:hover { opacity: .85; }
 
