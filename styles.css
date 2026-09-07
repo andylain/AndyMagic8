@@ -268,6 +268,7 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
   transition: opacity .2s, background .2s;
   -webkit-tap-highlight-color: transparent;
 }
+.tool-btn[hidden] { display: none; }
 .tool-btn:hover,
 .tool-btn[aria-expanded="true"],
 .tool-btn[aria-pressed="true"] { opacity: 1; background: rgba(255,255,255,.12); }
@@ -330,3 +331,28 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
   border-top: 1px solid rgba(255,255,255,.06);
 }
 .rows li b { font-weight: 700; }
+
+/* 分享的複製提示 */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  z-index: 4;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(18,22,38,.96);
+  font-size: .8rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,.5);
+}
+.toast[hidden] { display: none; }
+
+/* 選單裡的 iOS 安裝說明 */
+.mode-list .note {
+  padding: 4px 10px 10px;
+  font-size: .76rem;
+  line-height: 1.6;
+  opacity: .62;
+}
+.mode-list .note[hidden] { display: none; }

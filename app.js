@@ -98,6 +98,8 @@ const modeIcon  = document.getElementById("modeBtnIcon");
 const modeList  = document.getElementById("modeList");
 const swatch    = document.getElementById("swatch");
 const listBtn   = document.getElementById("listBtn");
+const shareBtn  = document.getElementById("shareBtn");
+const toastEl   = document.getElementById("toast");
 const listPanel = document.getElementById("listPanel");
 
 // 預設永遠是神奇八號球：每次打開都從這裡開始，不記上次選了什麼
@@ -106,6 +108,7 @@ let mode = MODES[0];
 let lastItem = null;   // 只有 noRepeat 的模式會用到
 
 function showItem(item) {
+  current = item;
   answer.style.color = (item.tone && TONES[item.tone]) || "";
   // 直接帶色碼的項目（選一個顏色）多顯示一塊色票，深色系才看得見
   swatch.hidden = !item.color;
@@ -160,6 +163,7 @@ function applyMode(next) {
   modeIcon.textContent = mode.icon;
   ball.setAttribute("aria-label", "搖動" + mode.label);
   showItem(mode.initial);
+  shareBtn.hidden = true;      // 還沒搖過，沒有結果可以分享
   [...modeList.querySelectorAll("button")].forEach(b =>
     b.setAttribute("aria-current", String(b.dataset.id === mode.id)));
   if (!listPanel.hidden) renderList();
@@ -192,6 +196,18 @@ sep.className = "sep";
 sep.setAttribute("aria-hidden", "true");
 modeList.appendChild(sep);
 
+// 搖一搖：裝置有動作感測才顯示
+const motionLi = document.createElement("li");
+const motionBtn = document.createElement("button");
+motionBtn.type = "button";
+motionBtn.setAttribute("role", "menuitemcheckbox");
+motionLi.appendChild(motionBtn);
+const motionItem = typeof window.DeviceMotionEvent !== "undefined" ? motionLi : null;
+if (motionItem) {
+  motionBtn.addEventListener("click", () => toggleMotion());
+  modeList.appendChild(motionLi);
+}
+
 // 安裝：只有瀏覽器真的給了安裝提示才顯示，否則這個項目點了也沒反應
 const installLi = document.createElement("li");
 installLi.hidden = true;
@@ -221,10 +237,67 @@ installBtn.addEventListener("click", async () => {
   installLi.hidden = true;
 });
 
+// iOS 的 Safari 沒有 beforeinstallprompt，只能引導使用者手動加到主畫面
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+              (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const standalone = window.matchMedia("(display-mode: standalone)").matches ||
+                   navigator.standalone === true;
+const iosNote = document.createElement("li");
+iosNote.className = "note";
+iosNote.hidden = true;
+iosNote.textContent = "在 Safari 按下方的「分享」，選「加入主畫面」。";
+if (isIOS && !standalone) {
+  const li = document.createElement("li");
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.setAttribute("role", "menuitem");
+  btn.setAttribute("aria-expanded", "false");
+  btn.textContent = "\u{1F4F2}\u00A0\u00A0安裝到主畫面";
+  btn.addEventListener("click", e => {
+    e.stopPropagation();
+    iosNote.hidden = !iosNote.hidden;
+    btn.setAttribute("aria-expanded", String(!iosNote.hidden));
+  });
+  li.appendChild(btn);
+  modeList.appendChild(li);
+  modeList.appendChild(iosNote);
+}
+
 const aboutLi = document.createElement("li");
 aboutLi.innerHTML = '<a href="https://andylain.com" target="_blank" rel="noopener" role="menuitem">' +
                     '\u{1F464}\u00A0\u00A0關於作者</a>';
 modeList.appendChild(aboutLi);
+
+/* ---------- 分享結果 ---------- */
+
+let toastTimer = null;
+function toast(msg) {
+  toastEl.textContent = msg;
+  toastEl.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toastEl.hidden = true; }, 2200);
+}
+
+let current = null;                    // 目前顯示的項目，分享用
+shareBtn.addEventListener("click", async () => {
+  if (!current) return;
+  const text = `${mode.icon} ${mode.label}：${current.primary}（${current.secondary}）`;
+  const url = location.href;
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: mode.label, text, url });
+      return;
+    }
+  } catch (e) {
+    if (e && e.name === "AbortError") return;   // 使用者自己取消，不算失敗
+  }
+  try {
+    await navigator.clipboard.writeText(text + "\n" + url);
+    toast("已複製結果");
+  } catch (e) {
+    toast("這個瀏覽器不支援分享");
+  }
+});
 
 /* ---------- 這個模式的總表 ---------- */
 
@@ -341,12 +414,76 @@ function shake() {
   ball.classList.add("shake");
   answer.classList.add("fade");
   playShake();
+  buzz();
 
   setTimeout(() => {
     showItem(pick());
     answer.classList.remove("fade");
+    shareBtn.hidden = false;
     rolling = false;
   }, 600);
+}
+
+/* ---------- 搖手機就搖球 ---------- */
+
+const MOTION_KEY = "magic8-motion";
+const needsPermission = typeof DeviceMotionEvent !== "undefined" &&
+                        typeof DeviceMotionEvent.requestPermission === "function";
+const motionSupported = typeof window.DeviceMotionEvent !== "undefined";
+
+// iOS 要使用者手勢授權，所以預設關；Android 不需要授權，預設開
+let motionOn = motionSupported && !needsPermission;
+try {
+  const saved = localStorage.getItem(MOTION_KEY);
+  if (saved === "on" && !needsPermission) motionOn = true;
+  if (saved === "off") motionOn = false;
+} catch (e) {}
+
+let lastAcc = null, lastShakeAt = 0;
+function onMotion(e) {
+  const a = e.accelerationIncludingGravity;
+  if (!a || a.x === null) return;
+  if (lastAcc) {
+    const delta = Math.abs(a.x - lastAcc.x) + Math.abs(a.y - lastAcc.y) + Math.abs(a.z - lastAcc.z);
+    const now = Date.now();
+    // 門檻訂高一點，走路或放口袋不會誤觸；冷卻時間避免一次甩動連開好幾槍
+    if (delta > 28 && now - lastShakeAt > 1200) { lastShakeAt = now; shake(); }
+  }
+  lastAcc = { x: a.x, y: a.y, z: a.z };
+}
+
+function applyMotion() {
+  window.removeEventListener("devicemotion", onMotion);
+  if (motionOn) window.addEventListener("devicemotion", onMotion);
+  if (motionItem) {
+    motionBtn.textContent = "\u{1F4F3}\u00A0\u00A0搖一搖：" + (motionOn ? "開" : "關");
+    motionBtn.setAttribute("aria-pressed", String(motionOn));
+  }
+}
+
+async function toggleMotion() {
+  if (!motionOn && needsPermission) {
+    try {
+      if (await DeviceMotionEvent.requestPermission() !== "granted") {
+        toast("需要動作感測權限才能搖一搖");
+        return;
+      }
+    } catch (e) {
+      toast("這個瀏覽器不支援搖一搖");
+      return;
+    }
+  }
+  motionOn = !motionOn;
+  try { localStorage.setItem(MOTION_KEY, motionOn ? "on" : "off"); } catch (e) {}
+  applyMotion();
+}
+
+const reduceMotion = window.matchMedia &&
+                     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function buzz() {
+  // 使用者要求減少動態效果時連震動也一起省略
+  if (reduceMotion || !navigator.vibrate) return;
+  try { navigator.vibrate([25, 55, 25, 55, 35]); } catch (e) {}
 }
 
 ball.addEventListener("click", shake);
@@ -355,6 +492,7 @@ ball.addEventListener("keydown", e => {
 });
 
 applyMode(mode);
+applyMotion();
 
 /* ---------- 離線支援 ---------- */
 if ("serviceWorker" in navigator) {
