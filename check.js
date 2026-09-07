@@ -22,10 +22,10 @@ vm.createContext(sandbox);
 // const 宣告不會掛到 sandbox 上，補一行把它們導出來
 vm.runInContext(
   fs.readFileSync(path.join(ROOT, "modes.js"), "utf8") +
-  "\n;globalThis.__exports = { MODES, TONES, GROUPS };",
+  "\n;globalThis.__exports = { MODES, TONES, GROUPS, MODE_ALIAS };",
   sandbox
 );
-const { MODES, TONES, GROUPS } = sandbox.__exports;
+const { MODES, TONES, GROUPS, MODE_ALIAS } = sandbox.__exports;
 
 const HEX = /^#[0-9a-fA-F]{3,8}$/;
 
@@ -146,6 +146,29 @@ for (const m of MODES || []) {
   for (const [name, hex] of tonesUsed) {
     if (byHex.has(hex)) fail(`${at}: tone「${byHex.get(hex)}」與「${name}」撞色 ${hex}`);
     byHex.set(hex, name);
+  }
+}
+
+// ---- 深連結：公開過的模式 id 不能失效 ----
+// 分享出去的網址帶著 #id，別人貼在群組裡的舊連結不該因為我們改名就壞掉
+const liveIds = new Set(MODES.map(m => m.id));
+for (const [from, to] of Object.entries(MODE_ALIAS)) {
+  if (!liveIds.has(to)) fail(`MODE_ALIAS 的「${from}」指向不存在的模式「${to}」`);
+  if (liveIds.has(from)) fail(`MODE_ALIAS 的「${from}」和現有模式 id 撞名，alias 永遠不會生效`);
+}
+const regPath = path.join(ROOT, "published-ids.json");
+if (!fs.existsSync(regPath)) {
+  fail("找不到 published-ids.json（記錄公開過的模式 id，由 bump.js 維護）");
+} else {
+  const published = JSON.parse(fs.readFileSync(regPath, "utf8")).ids || [];
+  const dead = published.filter(id => !liveIds.has(id) && !MODE_ALIAS[id]);
+  if (dead.length) {
+    fail(`這些 id 公開過但現在解不開，舊的分享連結會壞掉: ${dead.join(", ")}\n` +
+         `        改名的話請在 modes.js 的 MODE_ALIAS 補上「舊 id: 新 id」`);
+  }
+  const unrecorded = [...liveIds].filter(id => !published.includes(id));
+  if (unrecorded.length) {
+    warn(`新模式 id 還沒記進 published-ids.json（跑 node bump.js 就會補上）: ${unrecorded.join(", ")}`);
   }
 }
 

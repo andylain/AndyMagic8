@@ -41,3 +41,22 @@ sw = sw.replace(/const VERSION = "magic8-v\d+"/, `const VERSION = "magic8-v${nex
 fs.writeFileSync(htmlPath, html);
 fs.writeFileSync(swPath, sw);
 console.log(`版本 ${current} → ${next}（index.html 的 ?v=、sw.js 的 ASSET_V 與 VERSION）`);
+
+/* 順手把這一版的模式 id 記進 published-ids.json。
+ * 分享連結會把 id 帶在網址的 # 後面，一旦上線就不能消失 ——
+ * 「發版」正好是「這些 id 已經公開」的時間點，所以記錄放在這裡。
+ * 只增不減：check.js 會拿這份清單確認每個 id 都還解得開。 */
+const vm = require("vm");
+const sandbox = {};
+vm.createContext(sandbox);
+vm.runInContext(
+  fs.readFileSync(path.join(ROOT, "modes.js"), "utf8") + "\n;globalThis.__ids = MODES.map(m => m.id);",
+  sandbox
+);
+const regPath = path.join(ROOT, "published-ids.json");
+const reg = JSON.parse(fs.readFileSync(regPath, "utf8"));
+const before = reg.ids.length;
+reg.ids = [...new Set([...reg.ids, ...sandbox.__ids])].sort();
+fs.writeFileSync(regPath, JSON.stringify(reg, null, 2) + "\n");
+const added = reg.ids.length - before;
+console.log(added ? `published-ids.json 新增 ${added} 個 id` : "published-ids.json 沒有新的 id");

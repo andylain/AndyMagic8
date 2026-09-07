@@ -133,7 +133,30 @@ const motionBtn = document.getElementById("motionToggle");
 const listPanel = document.getElementById("listPanel");
 
 // 預設永遠是神奇八號球：每次打開都從這裡開始，不記上次選了什麼
+// （安裝成 App 時 manifest 的 start_url 也是 "./"，不會被上次的深連結綁架）
 let mode = MODES[0];
+
+/* ---------- 分享連結的深連結 ---------- */
+// 網址的 # 後面帶模式 id，例如 .../#restaurant 會直接開「餐廳吃什麼」。
+// 用 # 而不是 ?：hash 不會進 HTTP 請求，Service Worker 直接命中已預快取的 "./"，
+// 離線也開得起來；社群平台自己加的 ?fbclid= 也不會跟我們的參數混在一起。
+const MODE_BY_ID = new Map(MODES.map(m => [m.id, m]));
+const DEFAULT_MODE = MODES[0].id;
+
+function modeFromHash() {
+  const raw = decodeURIComponent(location.hash.replace(/^#/, "")).trim();
+  if (!raw) return null;
+  // 認不得的 id（手打錯、模式被移除又沒留 alias）就安靜地回預設，不要壞掉
+  return MODE_BY_ID.get(raw) || MODE_BY_ID.get(MODE_ALIAS[raw]) || null;
+}
+
+// 換模式時同步網址，使用者隨時複製網址列都是對的。
+// 用 replaceState 不是 pushState：換五個模式不該讓人按五次上一頁才離得開。
+function syncHash() {
+  const want = mode.id === DEFAULT_MODE ? "" : "#" + mode.id;
+  const url = location.pathname + location.search + want;
+  if (location.hash !== want) history.replaceState(null, "", url);
+}
 
 let lastItem = null;   // 只有 noRepeat 的模式會用到
 
@@ -197,6 +220,7 @@ function applyMode(next) {
   [...modeList.querySelectorAll("button")].forEach(b =>
     b.setAttribute("aria-current", String(b.dataset.id === mode.id)));
   if (!listPanel.hidden) renderList();
+  syncHash();
 }
 
 // 模式一多，平舖的選單會超出畫面，所以依 group 分段並加小標
@@ -218,7 +242,7 @@ GROUPS.forEach(group => {
     btn.addEventListener("click", () => {
       applyMode(m);
       playIntro();
-      track("mode_select", { mode: m.id, group: m.group });
+      track("mode_select", { mode: m.id, group: m.group, input: "menu" });
       closeMenu();
       modeBtn.focus();
     });
@@ -305,16 +329,24 @@ function toast(msg) {
 
 let current = null;                    // 目前顯示的項目，分享用
 let rolled = false;                    // 這個模式搖過了沒有，決定分享的內容
-const SHARE_CTA = "選擇困難的時候，讓神奇八號球幫你決定";
-const DEFAULT_MODE = MODES[0].id;
+const SHARE_CTA = "換你抽看看：";
+
+// 分享出去的網址帶上模式，對方點開就直接到同一個題目。
+// 順手清掉 query —— 自己是從 FB 點進來的話，網址上會有 ?fbclid=，別再傳下去
+function shareUrl() {
+  const u = new URL(location.href);
+  u.search = "";
+  u.hash = mode.id === DEFAULT_MODE ? "" : mode.id;
+  return u.href;
+}
 shareBtn.addEventListener("click", async () => {
   // 還沒搖過就沒有結果可分享，改成分享一句邀請
   const text = rolled
-    ? `${mode.icon} ${mode.label}：${current.primary}（${current.secondary}）`
+    ? `${mode.icon} ${mode.label}，抽到「${current.primary}（${current.secondary}）」，${SHARE_CTA}`
     : mode.id === DEFAULT_MODE            // 預設模式不用再報一次自己的名字
-      ? `${mode.icon} 神奇八號球 — ${SHARE_CTA}`
-      : `${mode.icon} ${SHARE_CTA}，來抽一題「${mode.label}」`;
-  const url = location.href;
+      ? `${mode.icon} 選擇困難的時候，讓神奇八號球幫你決定，${SHARE_CTA}`
+      : `${mode.icon} 來抽一題「${mode.label}」，${SHARE_CTA}`;
+  const url = shareUrl();
   try {
     if (navigator.share) {
       await navigator.share({ title: mode.label, text, url });
@@ -533,8 +565,19 @@ ball.addEventListener("keydown", e => {
   if (e.key === "Enter" || e.key === " ") { e.preventDefault(); shake("key"); }
 });
 
+const linked = modeFromHash();
+if (linked) mode = linked;
 applyMode(mode);
 applyMotion();
+if (linked) track("mode_select", { mode: mode.id, group: mode.group, input: "deeplink" });
+
+// 使用者按上一頁／下一頁，或直接改網址列的 # 時跟著切換。
+// applyMode 裡是 replaceState，不會再觸發 hashchange，所以不會打轉
+window.addEventListener("hashchange", () => {
+  const m = modeFromHash() || MODE_BY_ID.get(DEFAULT_MODE);
+  if (m !== mode) { applyMode(m); playIntro(); }
+  else syncHash();   // 認不得的 # 就算模式沒變，網址也要清乾淨
+});
 
 /* ---------- 入場動畫 ---------- */
 // reduceMotion 在上面搖一搖那段已經算好了

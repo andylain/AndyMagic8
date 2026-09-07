@@ -18,6 +18,14 @@
 
 const GROUPS = ["占卜", "隨機", "決定", "玩樂", "吃喝"];
 
+/* 分享連結會把模式 id 帶在網址的 # 後面（例如 .../#restaurant），
+ * 所以 id 一旦公開就是對外承諾，不能說改就改 —— 別人貼在群組裡的舊連結會壞掉。
+ * 真的要改名時，把「舊 id: 新 id」寫進這裡，舊連結就會被導到新模式。
+ * published-ids.json 記錄了所有出現過的 id，check.js 會確認每一個都還解得開。 */
+const MODE_ALIAS = {
+  // "old-id": "new-id",
+};
+
 const TONES = {
   yes:      "#4ade80",
   no:       "#f87171",
