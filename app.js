@@ -5,6 +5,33 @@
    noRepeat 只給「連抽到一樣會掃興」的模式；占卜、骰子、是非、方向
    都必須維持每次獨立隨機，所以不開。 */
 
+/* ---------- 使用量統計 ----------
+ *
+ * 把下面的 GA_ID 換成你的 GA4 評估 ID（Google Analytics → 管理 → 資料串流 → 網站）。
+ * 維持預設值的話完全不會載入 Google Analytics，也不會有任何外部請求 —— 這個 App
+ * 其餘部分仍然是零外部相依、可離線的。
+ *
+ * 只記錄「用了哪個模式、幾次、從哪裡觸發」，不送出任何抽到的答案內容。 */
+
+const GA_PLACEHOLDER = "G-XXXXXXXXXX";
+const GA_ID = GA_PLACEHOLDER;
+
+let track = () => {};                       // 沒設定 ID 就是個空函式
+// 注意 placeholder 本身也符合 G-[A-Z0-9]+ 的格式，要另外排除
+if (GA_ID !== GA_PLACEHOLDER && /^G-[A-Z0-9]{6,}$/.test(GA_ID)) {
+  const s = document.createElement("script");
+  s.async = true;
+  s.src = "https://www.googletagmanager.com/gtag/js?id=" + GA_ID;
+  document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || [];
+  const gtag = function () { window.dataLayer.push(arguments); };
+  window.gtag = gtag;
+  gtag("js", new Date());
+  gtag("config", GA_ID);
+  // 離線或被擋廣告時 dataLayer 只會累積在記憶體裡，不會噴錯
+  track = (name, params) => { try { gtag("event", name, params || {}); } catch (e) {} };
+}
+
 /* ---------- 音效：Web Audio 即時合成，不載入任何音檔 ---------- */
 
 const SOUND_KEY = "magic8-sound";
@@ -186,7 +213,12 @@ GROUPS.forEach(group => {
     btn.setAttribute("role", "menuitem");
     btn.dataset.id = m.id;
     btn.textContent = m.icon + "\u00A0\u00A0" + m.label;
-    btn.addEventListener("click", () => { applyMode(m); closeMenu(); modeBtn.focus(); });
+    btn.addEventListener("click", () => {
+      applyMode(m);
+      track("mode_select", { mode: m.id, group: m.group });
+      closeMenu();
+      modeBtn.focus();
+    });
     li.appendChild(btn);
     modeList.appendChild(li);
   });
@@ -233,7 +265,8 @@ installBtn.addEventListener("click", async () => {
   if (!deferredPrompt) return;
   closeMenu();
   deferredPrompt.prompt();
-  await deferredPrompt.userChoice;
+  const choice = await deferredPrompt.userChoice;
+  track("install_prompt", { outcome: choice && choice.outcome });
   deferredPrompt = null;            // 用過就失效，不能重複使用
   installLi.hidden = true;
 });
@@ -287,6 +320,7 @@ shareBtn.addEventListener("click", async () => {
   try {
     if (navigator.share) {
       await navigator.share({ title: mode.label, text, url });
+      track("share", { method: "native", mode: mode.id });
       return;
     }
   } catch (e) {
@@ -294,6 +328,7 @@ shareBtn.addEventListener("click", async () => {
   }
   try {
     await navigator.clipboard.writeText(text + "\n" + url);
+    track("share", { method: "clipboard", mode: mode.id });
     toast("已複製結果");
   } catch (e) {
     toast("這個瀏覽器不支援分享");
@@ -363,6 +398,7 @@ function renderList() {
 
 function openList() {
   renderList();
+  track("list_open", { mode: mode.id, group: mode.group });
   listPanel.hidden = false;
   listBtn.setAttribute("aria-expanded", "true");
 }
@@ -407,9 +443,10 @@ document.addEventListener("keydown", e => {
 const ball = document.getElementById("ball");
 let rolling = false;
 
-function shake() {
+function shake(source) {
   if (rolling) return;
   rolling = true;
+  track("roll", { mode: mode.id, group: mode.group, input: source || "tap" });
 
   ball.classList.remove("intro");   // 動畫還在跑就點球 → 直接跳過，別讓人等
   ball.classList.remove("shake");
@@ -450,7 +487,7 @@ function onMotion(e) {
     const delta = Math.abs(a.x - lastAcc.x) + Math.abs(a.y - lastAcc.y) + Math.abs(a.z - lastAcc.z);
     const now = Date.now();
     // 門檻訂高一點，走路或放口袋不會誤觸；冷卻時間避免一次甩動連開好幾槍
-    if (delta > 28 && now - lastShakeAt > 1200) { lastShakeAt = now; shake(); }
+    if (delta > 28 && now - lastShakeAt > 1200) { lastShakeAt = now; shake("shake"); }
   }
   lastAcc = { x: a.x, y: a.y, z: a.z };
 }
@@ -489,9 +526,9 @@ function buzz() {
   try { navigator.vibrate([25, 55, 25, 55, 35]); } catch (e) {}
 }
 
-ball.addEventListener("click", shake);
+ball.addEventListener("click", () => shake("tap"));
 ball.addEventListener("keydown", e => {
-  if (e.key === "Enter" || e.key === " ") { e.preventDefault(); shake(); }
+  if (e.key === "Enter" || e.key === " ") { e.preventDefault(); shake("key"); }
 });
 
 applyMode(mode);

@@ -224,6 +224,15 @@ else {
   }
 }
 
+// ---- 使用量統計 ----
+const app = fs.readFileSync(path.join(ROOT, "app.js"), "utf8");
+const gaId = (app.match(/const GA_ID = (?:"([^"]*)"|GA_PLACEHOLDER)/) || [])[1];
+if (gaId === undefined && /GA_ID = GA_PLACEHOLDER/.test(app)) {
+  warn("GA_ID 還是預設值，統計未啟用（要啟用的話把 app.js 的 GA_ID 換成 GA4 評估 ID）");
+} else if (gaId !== undefined && !/^G-[A-Z0-9]{6,}$/.test(gaId)) {
+  fail(`GA_ID「${gaId}」不是合法的 GA4 評估 ID 格式`);
+}
+
 // ---- 報告 ----
 const total = MODES.reduce((n, m) => n + (m.items ? m.items.length : 0), 0);
 console.log(`模式 ${MODES.length} 個、清單項目 ${total} 筆、tone ${Object.keys(TONES).length} 種`);

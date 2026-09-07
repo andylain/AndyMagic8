@@ -97,6 +97,37 @@ App 每次開啟都回到八號球，不會記住上次用的模式。
 `make-og.js` 在字型沒載到時會直接中止，不會默默用替代字型出圖。
 **這只影響封面圖，網站本身仍使用系統字型堆疊，不載任何外部字型。**
 
+## 使用量統計（GA4）
+
+預設**關閉** —— `app.js` 的 `GA_ID` 維持預設值時完全不載入 Google Analytics，
+也不會有任何外部請求，App 仍是零外部相依、可離線。
+
+**啟用步驟：**
+
+1. 到 [Google Analytics](https://analytics.google.com/) 建立資源，名稱用 `AndyMagic8`
+2. 建立「網站」資料串流，網址填 `https://andylain.github.io/AndyMagic8/`
+3. 複製評估 ID（`G-` 開頭），貼進 `app.js` 最上方的 `GA_ID`
+4. `node bump.js && node check.js`，然後推上去
+
+**送出的事件：**
+
+| 事件 | 參數 | 回答什麼問題 |
+| --- | --- | --- |
+| `roll` | `mode`、`group`、`input` | 哪個模式最常用？從哪個分組？用點的、按鍵盤還是甩手機？ |
+| `mode_select` | `mode`、`group` | 大家主動切去哪些模式？ |
+| `share` | `method`、`mode` | 有沒有人用分享？用系統分享還是複製？ |
+| `list_open` | `mode`、`group` | 有沒有人看總表？ |
+| `install_prompt` | `outcome` | 安裝提示的接受率 |
+
+**不會送出抽到的答案內容** —— 只記錄用了哪個模式、幾次、從哪裡觸發。
+
+在 GA 介面裡看「哪個題組最受歡迎」：**探索 → 自由格式**，維度選 `group`（自訂參數），
+指標選事件計數，事件篩選 `roll`。`group` 與 `mode` 需要先在
+「管理 → 自訂定義」註冊成自訂維度才會出現在報表裡。
+
+離線或被廣告攔截器擋掉時，事件只會累積在記憶體裡不會噴錯；
+Service Worker 不攔截跨網域請求，所以 GA 不會被快取。
+
 ## 開發
 
 ```
