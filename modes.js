@@ -1606,6 +1606,18 @@ const MODES = [
     ]
   },
   {
+    id: "jiaobei", group: "隨機", icon: "🙏", label: "擲筊", size: "lg",
+    hint: "心中默念，點一下球",
+    initial: { primary: "?", secondary: "點一下球" },
+    summary: "兩片筊杯各有平面與凸面，四種等機率組合換算成：聖筊 50%、笑筊 25%、陰筊 25%。",
+    // 刻意不設 noRepeat —— 擲筊每一次都必須獨立，連三個聖筊才有意義
+    items: [
+      { primary: "聖筊", secondary: "神明同意",     tone: "yes",   weight: 2 },
+      { primary: "笑筊", secondary: "神明笑而不答", tone: "maybe" },
+      { primary: "陰筊", secondary: "神明不同意",   tone: "no" }
+    ]
+  },
+  {
     id: "dice", group: "隨機", icon: "🎲", label: "擲骰子", size: "xl",
     hint: "點一下球，擲出點數",
     initial: { primary: "?", secondary: "點一下球" },
@@ -1938,7 +1950,7 @@ const MODES = [
     ]
   },
   {
-    id: "syncFriend", group: "玩樂", icon: "🤝", label: "默契大考驗・朋友",
+    id: "syncFriend", group: "玩樂", icon: "🤝", label: "朋友默契考驗",
     hint: "看你們有多了解對方",
     initial: { primary: "出題？", secondary: "點一下球" },
     noRepeat: true,
@@ -1996,7 +2008,7 @@ const MODES = [
     ]
   },
   {
-    id: "syncCouple", group: "玩樂", icon: "💑", label: "默契大考驗・情侶",
+    id: "syncCouple", group: "玩樂", icon: "💑", label: "情侶默契考驗",
     hint: "看你們有多了解對方",
     initial: { primary: "出題？", secondary: "點一下球" },
     noRepeat: true,
