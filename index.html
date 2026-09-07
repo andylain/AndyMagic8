@@ -243,7 +243,23 @@
     text-align: left;
     cursor: pointer;
   }
-  .mode-list button:hover { background: rgba(255,255,255,.09); }
+  .mode-list a {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 10px;
+    border-radius: 9px;
+    color: inherit;
+    text-decoration: none;
+    font-size: .9rem;
+  }
+  .mode-list li[hidden] { display: none; }
+  .mode-list .sep {
+    height: 1px;
+    margin: 6px 4px;
+    background: rgba(255,255,255,.11);
+  }
+  .mode-list button:hover, .mode-list a:hover { background: rgba(255,255,255,.09); }
   .mode-list button[aria-current="true"] { background: rgba(255,255,255,.07); font-weight: 600; }
   .mode-list button[aria-current="true"]::after { content: "✓"; margin-left: auto; opacity: .7; }
 
@@ -385,6 +401,13 @@
         { primary: "\u2684", secondary: "5 點" },
         { primary: "\u2685", secondary: "6 點" }
       ]
+    },
+    {
+      id: "number", icon: "\u{1F522}", label: "0～100 猜數字", size: "xl",
+      hint: "點一下球，抽一個數字",
+      initial: { primary: "?", secondary: "0 – 100" },
+      // 101 個值列成清單太蠢，直接算
+      roll: () => ({ primary: String(Math.floor(Math.random() * 101)), secondary: "0 – 100" })
     },
     {
       id: "yesno", icon: "\u2696\uFE0F", label: "Yes or No", size: "lg",
@@ -572,6 +595,7 @@
   }
 
   function pick() {
+    if (mode.roll) return mode.roll();     // 用算的模式沒有清單
     const items = mode.items;
     let item = items[Math.floor(Math.random() * items.length)];
     // 只在題庫夠大時才避免連抽重複，否則會把「隨機」變成「輪流」
@@ -608,6 +632,45 @@
     li.appendChild(btn);
     modeList.appendChild(li);
   });
+
+  const sep = document.createElement("li");
+  sep.className = "sep";
+  sep.setAttribute("aria-hidden", "true");
+  modeList.appendChild(sep);
+
+  // 安裝：只有瀏覽器真的給了安裝提示才顯示，否則這個項目點了也沒反應
+  const installLi = document.createElement("li");
+  installLi.hidden = true;
+  const installBtn = document.createElement("button");
+  installBtn.type = "button";
+  installBtn.setAttribute("role", "menuitem");
+  installBtn.textContent = "\u{1F4F2}\u00A0\u00A0安裝";
+  installLi.appendChild(installBtn);
+  modeList.appendChild(installLi);
+
+  let deferredPrompt = null;
+  window.addEventListener("beforeinstallprompt", e => {
+    e.preventDefault();               // 擋掉瀏覽器自己的橫幅，改由選單觸發
+    deferredPrompt = e;
+    installLi.hidden = false;
+  });
+  window.addEventListener("appinstalled", () => {
+    deferredPrompt = null;
+    installLi.hidden = true;
+  });
+  installBtn.addEventListener("click", async () => {
+    if (!deferredPrompt) return;
+    closeMenu();
+    deferredPrompt.prompt();
+    await deferredPrompt.userChoice;
+    deferredPrompt = null;            // 用過就失效，不能重複使用
+    installLi.hidden = true;
+  });
+
+  const aboutLi = document.createElement("li");
+  aboutLi.innerHTML = '<a href="https://andylain.com" target="_blank" rel="noopener" role="menuitem">' +
+                      '\u{1F464}\u00A0\u00A0關於作者</a>';
+  modeList.appendChild(aboutLi);
 
   function openMenu() {
     modeList.hidden = false;
