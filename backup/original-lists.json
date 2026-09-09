@@ -1,6 +1,6 @@
 {
   "note": "擴充前的原始清單快照。完整歷史仍在 git 裡，這份只是方便查閱。",
-  "takenAt": "2026-09-07",
+  "takenAt": "2026-09-09",
   "lists": [
     {
       "id": "food",
@@ -638,6 +638,514 @@
           "primary": "凶",
           "secondary": "退一步，海闊天空",
           "tone": "no"
+        }
+      ]
+    },
+    {
+      "id": "drink",
+      "label": "飲料喝什麼",
+      "count": 100,
+      "note": "改成台灣連鎖飲料店之前的飲品清單",
+      "items": [
+        {
+          "primary": "珍珠奶茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "四季春",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "檸檬紅茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "多多綠",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "冬瓜檸檬",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "烏龍拿鐵",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "紅茶拿鐵",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "無糖青茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "阿薩姆奶茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "鮮奶茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "蜂蜜綠茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "百香雙響炮",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "梅子綠茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "桂花烏龍",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "茉莉綠茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "抹茶拿鐵",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "黑糖珍珠鮮奶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "芋頭鮮奶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "蕎麥茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "麥茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "決明子茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "洛神花茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "玫瑰花茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "菊花茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "普洱茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "東方美人茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "鐵觀音",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "高山烏龍",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "荔枝紅茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "葡萄柚綠茶",
+          "secondary": "茶飲",
+          "tone": "tea"
+        },
+        {
+          "primary": "美式咖啡",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "拿鐵",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "卡布奇諾",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "摩卡",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "濃縮咖啡",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "焦糖瑪奇朵",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "冰滴咖啡",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "手沖單品",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "維也納咖啡",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "康寶藍",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "澳白",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "燕麥奶拿鐵",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "豆漿拿鐵",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "咖啡歐蕾",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "黑咖啡",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "冰美式",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "冰拿鐵",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "榛果拿鐵",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "香草拿鐵",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "越南咖啡",
+          "secondary": "咖啡",
+          "tone": "coffee"
+        },
+        {
+          "primary": "氣泡水",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "檸檬水",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "無糖綠茶",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "運動飲料",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "蘇打水",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "檸檬氣泡水",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "葡萄柚氣泡水",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "白開水",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "礦泉水",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "椰子水",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "大麥茶",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "玉米鬚茶",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "黑豆水",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "檸檬蜂蜜水",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "薄荷水",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "蘋果醋飲",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "康普茶",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "電解質水",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "無糖紅茶",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "仙草茶",
+          "secondary": "無糖",
+          "tone": "fizz"
+        },
+        {
+          "primary": "豆漿",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "鮮果汁",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "熱可可",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "優酪乳",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "柳橙汁",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "蘋果汁",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "葡萄汁",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "芒果汁",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "西瓜汁",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "木瓜牛奶",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "香蕉牛奶",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "酪梨牛奶",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "甘蔗汁",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "蘆薈汁",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "蔓越莓汁",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "番茄汁",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "綜合果汁",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "鳳梨汁",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "檸檬愛玉",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "仙草蜜",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "燒仙草",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "杏仁茶",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "米漿",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "薏仁漿",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "養樂多",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "鮮奶",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "巧克力牛奶",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "草莓牛奶",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "冬瓜茶",
+          "secondary": "其他",
+          "tone": "sweet"
+        },
+        {
+          "primary": "青草茶",
+          "secondary": "其他",
+          "tone": "sweet"
         }
       ]
     }

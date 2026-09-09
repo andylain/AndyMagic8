@@ -227,6 +227,9 @@ h1, .ball, .hint, .footer, .mode-menu { position: relative; z-index: 1; }
 .answer[data-size="md"] .primary { font-size: 1.6em; letter-spacing: .06em; }
 .answer[data-size="md"][data-long="true"] .primary { font-size: 1.22em; letter-spacing: .02em; }
 .answer[data-size="lg"] .primary { font-size: 2.6em; letter-spacing: .08em; }
+/* lg 是給「YES」這種短詞的字級。長一點的詞（例如 TRY AGAIN）會折成兩行，
+   兩行的高度加上圓窗的弧度就會頂到邊緣，所以長詞要降一級 */
+.answer[data-size="lg"][data-long="true"] .primary { font-size: 1.85em; letter-spacing: .04em; }
 .answer[data-size="xl"] .primary { font-size: 3.4em; line-height: 1; }
 .answer[data-size] .secondary { font-size: .78em; margin-top: 8px; }
 
